@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_app/prefs_manager.dart';
 
 class RegistrationForm extends StatefulWidget {
   @override
@@ -33,7 +32,7 @@ class RegistrationFormState extends State<RegistrationForm> {
                             return "Введите коректное имя!";
                           }
                           if (value.contains(RegExp("\d\W"))) //не работает
-                            return "В этом поле должны быть тольк буквы!";
+                            return "В этом поле должны быть только буквы!";
                           return null;
                         },
                       ),

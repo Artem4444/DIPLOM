@@ -1,0 +1,25 @@
+{
+    "drivers": [
+        {
+            "firstname": "Иван",
+            "lastname": "Иванов",
+            "mobilenumber": "+375295780694",
+            "post": "ivanexample@gmail.com",
+            "carcapasity": "15"
+        },
+        {
+            "firstname": "Василий",
+            "lastname": "Васильев",
+            "mobilenumber": "+375294860375",
+            "post": "vasilyexample@gmail.com",
+            "carcapasity": "20"
+        },
+        {
+            "firstname": "Генадий",
+            "lastname": "Генадьев",
+            "mobilenumber": "+375293753209",
+            "post": "genadyexample@gmail.com",
+            "carcapasity": "17"
+        }
+    ]
+}

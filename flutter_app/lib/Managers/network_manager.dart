@@ -1,0 +1,30 @@
+import 'dart:convert';
+import 'package:flutter_app/Models/route.dart';
+import 'package:flutter/services.dart' show rootBundle;
+
+class NetworkManager {
+  static Future<String> _loadAsRoutesAsset() async {
+    return await rootBundle.loadString('assets/fakeData/routes.json');
+  }
+
+  static Future<String> _loadAsStationAsset() async {
+    return await rootBundle.loadString('assets/fakeData/stations.json');
+  }
+
+  static Future<List<RouteData>> readRoutes() async {
+    String jsonString = await _loadAsRoutesAsset();
+
+    var objsJson = jsonDecode(jsonString)['routes'] as List;
+    List<RouteData> routes =
+        objsJson.map((routJson) => RouteData.fromJson(routJson)).toList();
+    return routes;
+  }
+
+  static Future<List<String>> readStations() async {
+    String jsonStations = await _loadAsStationAsset();
+    var objJson = jsonDecode(jsonStations);
+    List<String> stations = objJson != null ? List.from(objJson) : null;
+    print(stations);
+    return stations;
+  }
+}

@@ -1,0 +1,72 @@
+{
+    "routenumber": "19",
+    "stations": [
+        {
+            "name": "Вересковая 10",
+            "gps": {
+                "lat": "52.136473",
+                "lng": "23.712127"
+            },
+            "passengers": [
+                {
+                    "startstation": "Вересковая 10",
+                    "endstation": "Крайняя"
+                },
+                {
+                    "startstation": "Вересковая 10",
+                    "endStation": "Возера"
+                },
+                {
+                    "startstation": "Вересковая 10",
+                    "endstation": "Вересковая 11"
+                }
+            ]
+        },
+        {
+            "name": "Вересковая 11",
+            "gps": {
+                "lat": "52.138241",
+                "lng": "23.711912"
+            },
+            "passengers": [
+                {
+                    "startstation": "Вересковая 11",
+                    "endStation": "Калиновая"
+                },
+                {
+                    "startstation": "Вересковая 11",
+                    "endstation": "Калиновая"
+                }
+            ]
+        },
+        {
+            "name": "Крайняя",
+            "gps": {
+                "lat": "52.140410",
+                "lng": "23.705616"
+            },
+            "passengers": []
+        },
+        {
+            "name": "Возера",
+            "gps": {
+                "lat": "52.142916",
+                "lng": "23.706156"
+            },
+            "passengers": [
+                {
+                    "startstation": "Возера",
+                    "endstation": "Калиновая"
+                }
+            ]
+        },
+        {
+            "name": "Калиннавая",
+            "gps": {
+                "lat": "52.141592",
+                "lng": "23.714120"
+            },
+            "passengers": []
+        }
+    ]
+}

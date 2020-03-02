@@ -6,7 +6,10 @@ import 'package:geolocator/geolocator.dart';
 
 //void main() => runApp(MyApp());
 
-class MyApp extends StatelessWidget {
+class MapsPage extends StatelessWidget {
+  final String _routeNumber;
+  final String _destignationStation;
+  MapsPage(this._routeNumber, this._destignationStation);
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
@@ -31,7 +34,7 @@ class MyHomePage extends StatefulWidget {
 class _MyHomePageState extends State<MyHomePage> {
   Map<String, Marker> _markers = Map();
   GoogleMapController _controller;
-  
+
   @override
   void initState() {
     getRoutPoint();
@@ -147,7 +150,7 @@ class _MyHomePageState extends State<MyHomePage> {
             child: Icon(Icons.location_city)),
         RaisedButton(
             onPressed: () {
-            //  getCurrentLocation();
+              //  getCurrentLocation();
             },
             child: Icon(Icons.location_searching))
       ]),
