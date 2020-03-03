@@ -7,9 +7,9 @@ import 'package:geolocator/geolocator.dart';
 //void main() => runApp(MyApp());
 
 class MapsPage extends StatelessWidget {
-  final String _routeNumber;
-  final String _destignationStation;
-  MapsPage(this._routeNumber, this._destignationStation);
+  // final String _routeNumber;
+  // final String _destignationStation;
+  // MapsPage(this._routeNumber, this._destignationStation);
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
@@ -34,7 +34,7 @@ class MyHomePage extends StatefulWidget {
 class _MyHomePageState extends State<MyHomePage> {
   Map<String, Marker> _markers = Map();
   GoogleMapController _controller;
-
+  Timer mapUpdate;
   @override
   void initState() {
     getRoutPoint();
@@ -105,9 +105,8 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 
   void startGetLocation() {
-    Timer.periodic(Duration(seconds: 5), (timer) async {
+   mapUpdate = Timer.periodic(Duration(seconds: 5), (timer) async {
       try {
-        print("TRACKING");
         Position position = await Geolocator()
             .getCurrentPosition(desiredAccuracy: LocationAccuracy.high);
         if (_controller != null) {
@@ -127,6 +126,7 @@ class _MyHomePageState extends State<MyHomePage> {
 
   @override
   void dispose() {
+    mapUpdate.cancel();
     super.dispose();
   }
 

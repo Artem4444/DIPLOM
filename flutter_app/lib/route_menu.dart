@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_app/Managers/navigation_manager.dart';
+import 'package:flutter_app/Models/route.dart';
+import 'package:flutter_app/map_worker.dart';
 
 import 'Managers/network_manager.dart';
 
@@ -10,6 +13,7 @@ class RouteMenu extends StatefulWidget {
 }
 
 class RouteMenuState extends State {
+  RouteMenuData routeData = RouteMenuData();
   List<String> _stations;
   static Widget _stationsWidget;
   static Widget _directionWidget;
@@ -25,7 +29,7 @@ class RouteMenuState extends State {
 
   void _loadStations() {
     setState(() {
-      _stationsWidget = _loadWidget();
+      _widgetOptions[0] = _loadWidget();
     });
     _getStations();
   }
@@ -44,6 +48,36 @@ class RouteMenuState extends State {
     setState(() {
       _selectedIndex = index;
     });
+  }
+
+  Future<void> _warningAlert(BuildContext context) {
+    return showDialog<void>(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          content: Center(
+              child: const Text(
+                  '"Вы уже находитесь в месте, которое выбрали как цель маршрута!')),
+          actions: <Widget>[
+            FlatButton(
+              child: Text('Ok'),
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  void _getToTheMap(BuildContext context) {
+    if (routeData.currentStationIndex == routeData.endStationIndex) {
+      _warningAlert(context);
+      return;
+    } else {
+      NavigationManager.push(context, MapsPage());
+    }
   }
 
   @override
@@ -70,8 +104,8 @@ class RouteMenuState extends State {
           ),
         ],
         currentIndex: _selectedIndex,
-        selectedItemColor: Colors.amber[800],
-        // onTap: _onItemTapped,
+        selectedItemColor: Colors.blueAccent,
+        onTap: _onItemTapped,
       ),
     );
   }
@@ -93,25 +127,79 @@ class RouteMenuState extends State {
         onPressed: () {
           _loadStations();
         },
-        child: Text("Попробовать ещё"),
+        child: Text("Не удалось загрузить данные. Попробовать ещё раз"),
       )
     ])));
   }
 
   Widget _filledDirrectionWidget(List<String> stations) {
-    return Text("${stations[0]} ${stations[stations.length - 1]}");
+    return SafeArea(
+        child: Column(children: [
+      Container(
+          padding: EdgeInsets.fromLTRB(0, 20, 0, 0),
+          child: Center(
+              child: Text(
+            "Выберите направление маршрута",
+            style: TextStyle(fontSize: 20),
+          ))),
+      Container(
+          padding: EdgeInsets.fromLTRB(0, 20, 0, 0),
+          child: Center(
+              child: Text(
+            "От остановки ${stations[routeData.currentStationIndex]}",
+            style: TextStyle(fontSize: 25),
+          ))),
+      Container(
+          padding: EdgeInsets.fromLTRB(0, 20, 0, 0),
+          child: Center(
+              child: Column(children: [
+            RaisedButton(
+                onPressed: () {
+                  setState(() {
+                    routeData.endStationIndex = 0;
+                  });
+                  _getToTheMap(context);
+                },
+                child: Text("В направлении к ${stations[0]}")),
+            RaisedButton(
+                onPressed: () {
+                  setState(() {
+                    routeData.endStationIndex = stations.length - 1;
+                  });
+                  _getToTheMap(context);
+                },
+                child: Text("В направлении к ${stations[stations.length - 1]}"))
+          ])))
+    ]));
   }
 
   Widget _filledsStationsWidget(List<String> stations) {
-    return ListView.builder(
-      itemCount: stations.length,
-      itemBuilder: (context, index) {
-        return Card(
-            child: ListTile(
-          title: Text(stations[index], style: TextStyle(color: Colors.black)),
-          onTap: () => {_onItemTapped(1)},
-        ));
-      },
-    );
+    return SafeArea(
+        child: Column(children: [
+      Container(
+          padding: EdgeInsets.fromLTRB(0, 20, 0, 20),
+          child: Center(
+              child: Text(
+            "Выберите пункт отправления",
+            style: TextStyle(fontSize: 20),
+          ))),
+      Flexible(
+          child: ListView.builder(
+        itemCount: stations.length,
+        itemBuilder: (context, index) {
+          return Card(
+              child: ListTile(
+            title: Text(stations[index], style: TextStyle(color: Colors.black)),
+            onTap: () => {
+              setState(() {
+                routeData.currentStationIndex = index;
+                _widgetOptions[1] = _filledDirrectionWidget(_stations);
+              }),
+              _onItemTapped(1)
+            },
+          ));
+        },
+      ))
+    ]));
   }
 }

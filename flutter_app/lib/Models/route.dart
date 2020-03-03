@@ -5,15 +5,18 @@ class RouteData {
 
   RouteData(this.routenumber, this.startStation, this.endStation);
 
-  factory RouteData.fromJson(dynamic json){
-  return RouteData(
-   json['routenumber'],
-   json['startstation'],
-   json['endstation']);
+  factory RouteData.fromJson(dynamic json) {
+    return RouteData(
+        json['routenumber'], json['startstation'], json['endstation']);
   }
+}
 
-//   Map<String, dynamic> toJson() => {
-//         'name': name,
-// //        'email': email,
-//       };
+class RouteMenuData {
+  String routeNumber;
+  int currentStationIndex;
+  int endStationIndex;
+  RouteMenuData(){
+    currentStationIndex = 0;
+    endStationIndex = 0;
+  }
 }

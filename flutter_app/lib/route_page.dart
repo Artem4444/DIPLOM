@@ -75,16 +75,16 @@ class RoutePageState extends State {
                   Text("Выберите направление:"),
                   RaisedButton(
                       onPressed: () {
-                        NavigationManager.push(
-                            context, MapsPage(_routeNumber, station[0]));
+                        // NavigationManager.push(
+                        //     context, MapsPage(_routeNumber, station[0]));
                       },
                       child: Text("К ${station[0]}")),
                   RaisedButton(
                       onPressed: () {
-                        NavigationManager.push(
-                            context,
-                            MapsPage(
-                                _routeNumber, station[station.length - 1]));
+                        // NavigationManager.push(
+                        //     context,
+                        //     MapsPage(
+                        //         _routeNumber, station[station.length - 1]));
                       },
                       child: Text("К ${station[station.length - 1]}"))
                 ]))))

@@ -40,7 +40,7 @@ class MainMenuState extends State {
             body: SafeArea(
                 child: Container(
                     child: Column(children: [
-              TopOfMenu("HEHEHE"),
+              TopOfMenu("User1"),
               Expanded(
                   child: ListView.builder(
                 itemCount: listItems.length,
@@ -67,7 +67,7 @@ class ListItem extends StatelessWidget {
             subtitle: Text("$startStation <---> $endStation",
                 style: TextStyle(color: Colors.black)),
             onTap: () => {
-                  NavigationManager.push(context, RouteMenu()/*RoutePage(routeNumber)*/),
+                  NavigationManager.push(context, RouteMenu())
                 }));
   }
 }
