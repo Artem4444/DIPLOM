@@ -55,9 +55,8 @@ class RouteMenuState extends State {
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
-          content: Center(
-              child: const Text(
-                  '"Вы уже находитесь в месте, которое выбрали как цель маршрута!')),
+          content: const Text(
+              '"Вы уже находитесь в месте, которое выбрали как цель маршрута!'),
           actions: <Widget>[
             FlatButton(
               child: Text('Ok'),
@@ -88,7 +87,9 @@ class RouteMenuState extends State {
       ),
       floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
       floatingActionButton: FloatingActionButton(
-        onPressed: () {},
+        onPressed: () {
+          NavigationManager.pop(context);
+        },
         child: Text("19"),
         elevation: 2.0,
       ),
@@ -112,10 +113,11 @@ class RouteMenuState extends State {
 
   Widget _loadWidget() {
     return SizedBox(
-      child: CircularProgressIndicator(),
-      width: 60,
-      height: 60,
-    );
+        width: 60,
+        height: 60,
+        child: Center(
+          child: CircularProgressIndicator(),
+        ));
   }
 
   Widget _errorWidget() {

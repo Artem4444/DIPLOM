@@ -1,8 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_app/main_menu.dart';
+import 'package:flutter_app/authorization.dart';
 
-void main(){
-   runApp(MainMenu());
+void main() {
+  runApp(MaterialApp(debugShowCheckedModeBanner: false, home: Authorization()));
 }
-
-

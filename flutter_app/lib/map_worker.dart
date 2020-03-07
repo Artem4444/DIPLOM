@@ -4,34 +4,12 @@ import 'package:flutter/services.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:geolocator/geolocator.dart';
 
-//void main() => runApp(MyApp());
-
-class MapsPage extends StatelessWidget {
-  // final String _routeNumber;
-  // final String _destignationStation;
-  // MapsPage(this._routeNumber, this._destignationStation);
+class MapsPage extends StatefulWidget {
   @override
-  Widget build(BuildContext context) {
-    return MaterialApp(
-      debugShowCheckedModeBanner: false,
-      title: 'Flutter Maps',
-      theme: ThemeData(
-        primarySwatch: Colors.blue,
-      ),
-      home: MyHomePage(title: 'Flutter Map Home Page'),
-    );
-  }
+  _MapsPageState createState() => _MapsPageState();
 }
 
-class MyHomePage extends StatefulWidget {
-  MyHomePage({Key key, this.title}) : super(key: key);
-  final String title;
-
-  @override
-  _MyHomePageState createState() => _MyHomePageState();
-}
-
-class _MyHomePageState extends State<MyHomePage> {
+class _MapsPageState extends State {
   Map<String, Marker> _markers = Map();
   GoogleMapController _controller;
   Timer mapUpdate;
@@ -91,21 +69,24 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 
   void updateYourMarker(Position newLocalData) {
-    LatLng latlng = LatLng(newLocalData.latitude, newLocalData.longitude);
-    this.setState(() {
-      _markers["You"] = Marker(
-        markerId: MarkerId("You"),
-        position: latlng,
-        rotation: newLocalData.heading,
-        icon: BitmapDescriptor.defaultMarker,
-        zIndex: 2,
-        flat: true,
-      );
-    });
+    if (mapUpdate != null) {
+      LatLng latlng = LatLng(newLocalData.latitude, newLocalData.longitude);
+      this.setState(() {
+        _markers["You"] = Marker(
+          markerId: MarkerId("You"),
+          position: latlng,
+          rotation: newLocalData.heading,
+          icon: BitmapDescriptor.defaultMarker,
+          // icon: BitmapDescriptor.fromAsset("images/driver_icon.png"),
+          zIndex: 2,
+          flat: true,
+        );
+      });
+    }
   }
 
   void startGetLocation() {
-   mapUpdate = Timer.periodic(Duration(seconds: 5), (timer) async {
+    mapUpdate = Timer.periodic(Duration(seconds: 5), (timer) async {
       try {
         Position position = await Geolocator()
             .getCurrentPosition(desiredAccuracy: LocationAccuracy.high);
@@ -133,27 +114,21 @@ class _MyHomePageState extends State<MyHomePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text(widget.title)),
-      body: GoogleMap(
+        body: Column(children: [
+      Flexible(
+          child: GoogleMap(
         mapType: MapType.normal,
         initialCameraPosition: initialLocation,
         markers: Set<Marker>.of(_markers.values),
         onMapCreated: (GoogleMapController controller) {
           _controller = controller;
         },
-      ),
-      bottomNavigationBar: Row(children: [
-        RaisedButton(
-            onPressed: () {
-              showNextTarget();
-            },
-            child: Icon(Icons.location_city)),
-        RaisedButton(
-            onPressed: () {
-              //  getCurrentLocation();
-            },
-            child: Icon(Icons.location_searching))
-      ]),
-    );
+      )),
+      Flexible(child: Container(child: Text("SAS")))
+    ]));
   }
+}
+
+class MapData{
+  List<String> stations = List<String>();
 }

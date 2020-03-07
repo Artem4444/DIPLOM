@@ -4,7 +4,6 @@ import 'package:flutter_app/Managers/navigation_manager.dart';
 import 'package:flutter_app/Managers/network_manager.dart';
 import 'package:flutter_app/Models/route.dart';
 import 'package:flutter_app/route_menu.dart';
-import 'package:flutter_app/route_page.dart';
 
 class MainMenu extends StatefulWidget {
   @override
@@ -40,7 +39,6 @@ class MainMenuState extends State {
             body: SafeArea(
                 child: Container(
                     child: Column(children: [
-              TopOfMenu("User1"),
               Expanded(
                   child: ListView.builder(
                 itemCount: listItems.length,
@@ -64,40 +62,11 @@ class ListItem extends StatelessWidget {
     return Card(
         child: ListTile(
             title: Text(routeNumber, style: TextStyle(color: Colors.black)),
-            subtitle: Text("$startStation <---> $endStation",
-                style: TextStyle(color: Colors.black)),
-            onTap: () => {
-                  NavigationManager.push(context, RouteMenu())
-                }));
-  }
-}
-
-class TopOfMenu extends StatelessWidget {
-  final String _userName;
-
-  TopOfMenu(this._userName);
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      child: Row(
-        children: [
-          Expanded(child: Text(_userName)),
-          FlatButton(
-              shape: RoundedRectangleBorder(
-                  borderRadius: new BorderRadius.circular(20.0),
-                  side: BorderSide(color: Colors.black)),
-              child: Icon(Icons.person_outline),
-              onPressed: () => {print("To user settings")})
-        ],
-      ),
-      height: 40,
-      decoration: BoxDecoration(
-          color: Colors.white54,
-          border: Border(
-              top: BorderSide(),
-              right: BorderSide(),
-              left: BorderSide(),
-              bottom: BorderSide())),
-    );
+            subtitle: Row(children: [
+              Text(startStation),
+              Icon(Icons.linear_scale),
+              Text(endStation)
+            ]),
+            onTap: () => {NavigationManager.push(context, RouteMenu())}));
   }
 }
