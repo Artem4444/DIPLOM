@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_app/Managers/navigation_manager.dart';
@@ -30,11 +32,19 @@ class MainMenuState extends State {
     _getRoutes();
   }
 
+  _killApp() {
+    exit(0);
+  }
+
+  Future<bool> _onBackPressed() {
+    return _killApp() ?? false;
+  }
+
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-        debugShowCheckedModeBanner: false,
-        home: Scaffold(
+    return WillPopScope(
+        onWillPop: _onBackPressed,
+        child: Scaffold(
             backgroundColor: Colors.white,
             body: SafeArea(
                 child: Container(

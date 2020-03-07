@@ -1,11 +1,9 @@
 import 'dart:async';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_app/Managers/navigation_manager.dart';
 import 'package:flutter_app/Managers/prefs_manager.dart';
 import 'package:flutter_app/Models/user.dart';
 import 'package:flutter_app/main_menu.dart';
-import 'package:flutter_app/route_menu.dart';
 
 class Authorization extends StatefulWidget {
   @override
@@ -35,9 +33,7 @@ class AuthorizationState extends State {
       currentState = _greatingsWidget();
     });
     Timer(Duration(seconds: 3), () {
-      print("TO MENU");
-      Navigator.of(context).push(MaterialPageRoute(
-          builder: (context) => MainMenu()));
+      NavigationManager.push(context, MainMenu());
     });
   }
 
@@ -58,11 +54,11 @@ class AuthorizationState extends State {
 
   @override
   Widget build(BuildContext context) {
-    return  Scaffold(body: SafeArea(child: currentState));
+    return Scaffold(body: SafeArea(child: currentState));
   }
 
   Widget _greatingsWidget() {
-    return Center(child: Text("Добро пожаловть ${_user.name}!"));
+    return Center(child: Text("Добро пожаловать ${_user.name}!"));
   }
 
   Widget _registrationWidget() {
@@ -70,58 +66,73 @@ class AuthorizationState extends State {
   }
 
   Widget _loginWidget() {
-    return Container(
-        child: Column(children: [
-      Text("Вход"),
-      Form(
-          key: _formKey,
-          child: Column(children: [
-            TextFormField(
-              decoration: InputDecoration(
-                  border: OutlineInputBorder(),
-                  labelText: "Номер мобильного телефона",
-                  icon: Icon(Icons.device_unknown)),
-              validator: (value) {
-                if (value.isEmpty) {
-                  return 'Введите полный номер вашего мобильного телефона!';
-                }
-                _user.mobileNumber = value;
-                return null;
-              },
-            ),
-            TextFormField(
-              decoration: InputDecoration(
-                  border: OutlineInputBorder(),
-                  labelText: "Пароль",
-                  icon: Icon(Icons.screen_lock_portrait)),
-              validator: (value) {
-                if (value.isEmpty) {
-                  return 'Введите пароль!';
-                }
-                _user.password = value;
-                return null;
-              },
-            ),
-            Row(children: [
-              RaisedButton(
-                onPressed: () {
-                  if (_formKey.currentState.validate()) {
-                    _sendUserLogin(_user);
-                  }
-                },
-                child: Text('Вход'),
-              ),
-              RaisedButton(
-                onPressed: () {
-                  setState(() {
-                    currentState = _registrationWidget();
-                  });
-                },
-                child: Text('Регистрация'),
-              )
-            ])
-          ]))
-    ]));
+    return Column(mainAxisAlignment: MainAxisAlignment.center, children: [
+      Container(
+          padding: EdgeInsets.fromLTRB(0, 0, 0, 20),
+          child: Text("Вход",
+              style: TextStyle(fontSize: 30, color: Colors.blueAccent))),
+      Form(key: _formKey,
+          child: Container(
+              padding: EdgeInsets.fromLTRB(20, 0, 20, 20),
+              child: Column(children: [
+                TextFormField(
+                  decoration: _inputDecoration(
+                      "Номер мобильного телефона", Icons.device_unknown),
+                  validator: (value) {
+                    if (value.isEmpty) {
+                      return 'Введите полный номер!';
+                    }
+                    _user.mobileNumber = value;
+                    return null;
+                  },
+                ),
+                SizedBox(
+                  height: 15,
+                ),
+                TextFormField(
+                  obscureText: true,
+                  decoration:
+                      _inputDecoration("Пароль", Icons.screen_lock_portrait),
+                  validator: (value) {
+                    if (value.isEmpty) {
+                      return 'Введите пароль!';
+                    }
+                    _user.password = value;
+                    return null;
+                  },
+                ),
+              ]))),
+      Row(mainAxisAlignment: MainAxisAlignment.center, children: [
+        _raisedButton('Вход', Colors.blueAccent, () {
+          if (_formKey.currentState.validate()) {
+            _sendUserLogin(_user);
+          }
+        }),
+        SizedBox(
+          width: 20,
+        ),
+        _raisedButton('Регистрация', Colors.greenAccent, () {
+          setState(() {
+            currentState = _registrationWidget();
+          });
+        })
+      ])
+    ]);
+  }
+
+  InputDecoration _inputDecoration(String text, IconData icon) {
+    return InputDecoration(
+        border: OutlineInputBorder(), labelText: text, icon: Icon(icon));
+  }
+
+  RaisedButton _raisedButton(String text, Color color, Function onPresed) {
+    return RaisedButton(
+      elevation: 3,
+      color: color,
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+      onPressed: onPresed,
+      child: Text(text),
+    );
   }
 
   Widget _loadWidget() {
