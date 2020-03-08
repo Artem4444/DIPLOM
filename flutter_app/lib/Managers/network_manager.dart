@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'package:flutter/material.dart';
 import 'package:flutter_app/Models/route.dart';
 import 'package:flutter/services.dart' show rootBundle;
 
@@ -26,5 +27,14 @@ class NetworkManager {
     List<String> stations = objJson != null ? List.from(objJson) : null;
     print(stations);
     return stations;
+  }
+
+  static Widget loadWidget() {
+    return Center(
+        child: SizedBox(
+      width: 60,
+      height: 60,
+      child: CircularProgressIndicator(),
+    ));
   }
 }

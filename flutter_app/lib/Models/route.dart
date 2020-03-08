@@ -1,9 +1,9 @@
 class RouteData {
-  final String routenumber;
+  final int routeNumber;
   final String startStation;
   final String endStation;
 
-  RouteData(this.routenumber, this.startStation, this.endStation);
+  RouteData(this.routeNumber, this.startStation, this.endStation);
 
   factory RouteData.fromJson(dynamic json) {
     return RouteData(

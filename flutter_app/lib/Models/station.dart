@@ -6,4 +6,7 @@ class Station {
   double latitude;
   double longitude;
   List<Passanger> passangers;
+
+Station(this.index, this.name, this.latitude, this.longitude, this.passangers);
+
 }

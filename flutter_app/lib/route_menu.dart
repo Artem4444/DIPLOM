@@ -6,14 +6,19 @@ import 'package:flutter_app/map_worker.dart';
 import 'Managers/network_manager.dart';
 
 class RouteMenu extends StatefulWidget {
+  final int _routeNumber;
+
+  RouteMenu(this._routeNumber);
+
   @override
   RouteMenuState createState() {
-    return RouteMenuState();
+    return RouteMenuState(_routeNumber);
   }
 }
 
 class RouteMenuState extends State {
   RouteMenuData routeData = RouteMenuData();
+  final int _routeNumber;
   List<String> _stations;
   static Widget _stationsWidget;
   static Widget _directionWidget;
@@ -23,13 +28,14 @@ class RouteMenuState extends State {
     _directionWidget,
   ];
 
+  RouteMenuState(this._routeNumber);
   void initState() {
     _loadStations();
   }
 
   void _loadStations() {
     setState(() {
-      _widgetOptions[0] = _loadWidget();
+      _widgetOptions[0] = NetworkManager.loadWidget();
     });
     _getStations();
   }
@@ -56,7 +62,7 @@ class RouteMenuState extends State {
       builder: (BuildContext context) {
         return AlertDialog(
           content: const Text(
-              '"Вы уже находитесь в месте, которое выбрали как цель маршрута!'),
+              'Вы уже находитесь в месте, которое выбрали как цель маршрута!'),
           actions: <Widget>[
             FlatButton(
               child: Text('Ok'),
@@ -70,12 +76,12 @@ class RouteMenuState extends State {
     );
   }
 
-  void _getToTheMap(BuildContext context) {
+  void _getToTheMap(MapData mapData) {
     if (routeData.currentStationIndex == routeData.endStationIndex) {
       _warningAlert(context);
       return;
     } else {
-      NavigationManager.push(context, MapsPage());
+      NavigationManager.push(context, MapsPage(mapData));
     }
   }
 
@@ -90,7 +96,7 @@ class RouteMenuState extends State {
         onPressed: () {
           NavigationManager.pop(context);
         },
-        child: Text("19"),
+        child: Text(_routeNumber.toString()),
         elevation: 2.0,
       ),
       bottomNavigationBar: BottomNavigationBar(
@@ -109,15 +115,6 @@ class RouteMenuState extends State {
         onTap: _onItemTapped,
       ),
     );
-  }
-
-  Widget _loadWidget() {
-    return SizedBox(
-        width: 60,
-        height: 60,
-        child: Center(
-          child: CircularProgressIndicator(),
-        ));
   }
 
   Widget _errorWidget() {
@@ -160,7 +157,8 @@ class RouteMenuState extends State {
                   setState(() {
                     routeData.endStationIndex = 0;
                   });
-                  _getToTheMap(context);
+                  _getToTheMap(
+                      new MapData(routeData.currentStationIndex, false));
                 },
                 child: Text("В направлении к ${stations[0]}")),
             RaisedButton(
@@ -168,7 +166,8 @@ class RouteMenuState extends State {
                   setState(() {
                     routeData.endStationIndex = stations.length - 1;
                   });
-                  _getToTheMap(context);
+                  _getToTheMap(
+                      new MapData(routeData.currentStationIndex, true));
                 },
                 child: Text("В направлении к ${stations[stations.length - 1]}"))
           ])))

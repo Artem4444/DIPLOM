@@ -1,17 +1,17 @@
 {
     "routes": [
         {
-            "routenumber": "19",
+            "routenumber": 19,
             "startstation":"Вересковая 10",
             "endstation":"Калиновая"
         },
         {
-            "routenumber": "20",
+            "routenumber": 20,
             "startstation":"Косичи",
             "endstation":"Обласная больница"
         },
         {
-            "routenumber": "21",
+            "routenumber": 21,
             "startstation":"ЦГБ",
             "endstation":"Тюхиничи"
         }

@@ -5,6 +5,8 @@ import 'package:flutter_app/Managers/prefs_manager.dart';
 import 'package:flutter_app/Models/user.dart';
 import 'package:flutter_app/main_menu.dart';
 
+import 'Managers/network_manager.dart';
+
 class Authorization extends StatefulWidget {
   @override
   AuthorizationState createState() {
@@ -47,9 +49,14 @@ class AuthorizationState extends State {
   @override
   void initState() {
     setState(() {
-      currentState = _loadWidget();
+      currentState = NetworkManager.loadWidget();
     });
     _getPrefs();
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
   }
 
   @override
@@ -135,12 +142,5 @@ class AuthorizationState extends State {
     );
   }
 
-  Widget _loadWidget() {
-    return Center(
-        child: SizedBox(
-      width: 60,
-      height: 60,
-      child: CircularProgressIndicator(),
-    ));
-  }
+  
 }
