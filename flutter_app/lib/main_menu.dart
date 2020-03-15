@@ -20,14 +20,14 @@ class MainMenu extends StatefulWidget {
 
 class MainMenuState extends State {
   User user = User();
-  List<Widget> listItems = List<Widget>();
+  List<Widget> routeList = List<Widget>();
   Widget currentState;
 
   _getRoutes() async {
     List<RouteData> routesDatas = await NetworkManager.readRoutes();
     setState(() {
       for (var route in routesDatas) {
-        listItems.add(_listItem(route));
+        routeList.add(_listItem(route));
       }
       currentState = _routeList();
     });
@@ -73,29 +73,38 @@ class MainMenuState extends State {
     return Container(
         child: Column(children: [
       Container(
+        decoration: BoxDecoration(
+          color: Colors.blue[50]
+        ),
         padding: EdgeInsets.fromLTRB(5, 10, 5, 10),
         child: Row(children: [
-          Row(children: [Icon(Icons.person_pin), Text(user.name)]),
+          Row(children: [Icon(Icons.person), Text(user.name)]),
           SizedBox(
             width: 130,
           ),
-          RaisedButton(
-              shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(20)),
-              color: Colors.cyan[300],
-              child: Text("Выйти из профиля"),
-              onPressed: () {
-                _closeUserProfile();
-              })
+          Expanded(
+              child: RaisedButton(
+                  shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(20)),
+                  color: Colors.blue[300],
+                  child: Text("Выйти из профиля"),
+                  onPressed: () {
+                    _closeUserProfile();
+                  }))
         ]),
       ),
       Expanded(
           child: Container(
-              padding: EdgeInsets.fromLTRB(10, 0, 10, 0),
+              decoration: BoxDecoration(
+                  gradient: LinearGradient(
+                      begin: Alignment.topRight,
+                      end: Alignment.bottomLeft,
+                      colors: [Colors.blue[200], Colors.blueAccent[400]])),
+              padding: EdgeInsets.fromLTRB(10, 10, 10, 0),
               child: ListView.builder(
-                itemCount: listItems.length,
+                itemCount: routeList.length,
                 itemBuilder: (context, index) {
-                  return listItems[index];
+                  return routeList[index];
                 },
               )))
     ]));
@@ -113,7 +122,7 @@ class MainMenuState extends State {
                 width: 45,
                 decoration: BoxDecoration(
                   shape: BoxShape.circle,
-                  color: Colors.green,
+                  color: Colors.green[500],
                 ),
                 child: Text(route.routeNumber.toString(),
                     style: TextStyle(color: Colors.black, fontSize: 25),
@@ -123,6 +132,8 @@ class MainMenuState extends State {
               Icon(Icons.linear_scale),
               Text(route.endStation)
             ]),
-            onTap: () => {NavigationManager.push(context, RouteMenu(route.routeNumber))}));
+            onTap: () => {
+                  NavigationManager.push(context, RouteMenu(route.routeNumber))
+                }));
   }
 }

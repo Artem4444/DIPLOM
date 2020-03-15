@@ -26,7 +26,7 @@ class _MapsPageState extends State {
     _setMapData();
     _getDriverIcon();
     getRoutPoint();
-    startGetLocation();
+    getLocation();
   }
 
   void _getDriverIcon() async {
@@ -35,12 +35,12 @@ class _MapsPageState extends State {
   }
 
   static final CameraPosition initialLocation = CameraPosition(
-    target: LatLng(52.136473, 23.712127),
-    zoom: 14.5,
+    target: LatLng(52.093877, 23.731953),
+    zoom: 10.5,
   );
 
   void _setMapData() {
-    _mapData.setCurrentTarget();
+    _mapData.setNextStation();
   }
 
   void showNextTarget() {
@@ -84,8 +84,8 @@ class _MapsPageState extends State {
     }
   }
 
-  void startGetLocation() {
-    mapUpdate = Timer.periodic(Duration(seconds: 5), (timer) async {
+  void getLocation() {
+    mapUpdate = Timer.periodic(Duration(seconds: 3), (timer) async {
       try {
         if (_controller != null) {
           Position position = await Geolocator()
@@ -93,7 +93,8 @@ class _MapsPageState extends State {
           double distance =
               await _getDistanceBetwen(position, _mapData.nextStation);
           setState(() {
-            _mapData.distance = distance;
+            _mapData.distance = distance.round();
+            _mapData.setNextStation();
           });
           _controller.animateCamera(CameraUpdate.newCameraPosition(
               CameraPosition(
@@ -130,20 +131,39 @@ class _MapsPageState extends State {
       )),
       Flexible(
           child: Container(
+              padding: EdgeInsets.fromLTRB(10, 20, 10, 20),
               child: Column(children: [
-        Row(children: [
-          Text("Направляйтесь к остановке: "),
-          Text(_mapData.nextStation.name)
-        ]),
-        Row(children: [Text("Расстояние"), Text(_mapData.distance.toString())]),
-        Row(children: [Text("Выйдет пассажиров: "), Text("")]),
-        Row(children: [Text("Зайдёт пассажиров: "), Text("")]),
-        RaisedButton(
-          onPressed: () {},
-          child: Text("Ручной ввод"),
-        )
-      ])))
+                stationDataItemWidget(
+                    "Направляйтесь к остановке: ", _mapData.nextStation.name),
+                SizedBox(height: 10),
+                stationDataItemWidget("Расстояние: ", "${_mapData.distance} м"),
+                SizedBox(height: 10),
+                stationDataItemWidget("Выйдет пассажиров: ", ""),
+                SizedBox(height: 10),
+                stationDataItemWidget("Зайдёт пассажиров: ", ""),
+                SizedBox(height: 10),
+                Align(
+                    alignment: Alignment.centerLeft,
+                    child: RaisedButton(
+                      onPressed: () {},
+                      child: Text("Следующая остановка"),
+                    ))
+              ])))
     ]));
+  }
+
+  TextStyle stationData() {
+    return TextStyle(fontSize: 18);
+  }
+
+  Widget stationDataItemWidget(String leftSide, String rightSide) {
+    return Align(
+        alignment: Alignment.centerLeft,
+        child: FittedBox(
+            child: Row(children: [
+          Text(leftSide, style: stationData()),
+          Text(rightSide, style: stationData())
+        ])));
   }
 }
 
@@ -151,15 +171,49 @@ class MapData {
   Station nextStation;
   int currentStationIndex;
   int nextStationIndex;
-  bool isLastStation;
-  double distance;
+  bool toLastStation;
+  bool isRouteEnd = false;
+  int distance;
   List<Station> stations = List<Station>();
 
-  void setCurrentTarget() {
-    nextStation = stations[currentStationIndex];
+  void setNextStation() {
+    if (nextStation == null) {
+      nextStation = _chouseNextStation();
+      return;
+    }
+    if (_isCloseDistance()) {
+      nextStation = _chouseNextStation();
+      if (nextStation == null) {
+        isRouteEnd = true;
+        nextStation = stations[currentStationIndex];
+      }
+    }
   }
 
-  MapData(this.currentStationIndex, this.isLastStation) {
+  Station _chouseNextStation() {
+    int index;
+    if (toLastStation)
+      index = currentStationIndex + 1;
+    else
+      index = currentStationIndex - 1;
+    if (_isRightIndex(index)) {
+      currentStationIndex = index;
+      return stations[index];
+    }
+    return null;
+  }
+
+  bool _isRightIndex(int index) {
+    if (index >= 0 && index < stations.length) return true;
+    return false;
+  }
+
+  bool _isCloseDistance() {
+    if (distance < 50) return true;
+    return false;
+  }
+
+  MapData(this.currentStationIndex, this.toLastStation) {
     stations.add(new Station(0, "Вересковая 10", 52.136473, 23.712127, null));
     stations.add(new Station(1, "Вересковая 11", 52.138241, 23.711912, null));
     stations.add(new Station(2, "Крайняя", 52.140410, 23.705616, null));

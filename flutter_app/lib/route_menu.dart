@@ -36,6 +36,7 @@ class RouteMenuState extends State {
   void _loadStations() {
     setState(() {
       _widgetOptions[0] = NetworkManager.loadWidget();
+      _widgetOptions[1] = NetworkManager.loadWidget();
     });
     _getStations();
   }
@@ -65,7 +66,7 @@ class RouteMenuState extends State {
               'Вы уже находитесь в месте, которое выбрали как цель маршрута!'),
           actions: <Widget>[
             FlatButton(
-              child: Text('Ok'),
+              child: Text('Назад'),
               onPressed: () {
                 Navigator.of(context).pop();
               },
@@ -96,7 +97,8 @@ class RouteMenuState extends State {
         onPressed: () {
           NavigationManager.pop(context);
         },
-        child: Text(_routeNumber.toString()),
+        child: Text(_routeNumber.toString(),
+        style: TextStyle(fontSize: 30)),
         elevation: 2.0,
       ),
       bottomNavigationBar: BottomNavigationBar(

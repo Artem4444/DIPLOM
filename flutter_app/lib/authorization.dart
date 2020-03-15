@@ -18,12 +18,14 @@ class AuthorizationState extends State {
   final _formKey = GlobalKey<FormState>();
   static Widget currentState;
   User _user = new User();
+  double _greatingsOpacity = 0;
 
   void _getPrefs() async {
     _user.name = await PrefsManager.getUserName();
     if (_user.name == null || _user.name == "") {
       setState(() {
         currentState = _loginWidget();
+        _greatingsOpacity = 1;
       });
     } else {
       _showGreatings();
@@ -33,6 +35,7 @@ class AuthorizationState extends State {
   void _showGreatings() {
     setState(() {
       currentState = _greatingsWidget();
+      _greatingsOpacity = 1;
     });
     Timer(Duration(seconds: 3), () {
       NavigationManager.push(context, MainMenu());
@@ -61,11 +64,30 @@ class AuthorizationState extends State {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(body: SafeArea(child: currentState));
+    return Scaffold(
+        body: SafeArea(
+            child: AnimatedOpacity(
+                duration: const Duration(seconds: 2),
+                opacity: _greatingsOpacity,
+                child: Container(
+                    decoration: BoxDecoration(
+                        gradient: LinearGradient(
+                            begin: Alignment.topRight,
+                            end: Alignment.bottomLeft,
+                            colors: [
+                          Colors.blue[200],
+                          Colors.blueAccent[400]
+                        ])),
+                    child: currentState))));
   }
 
   Widget _greatingsWidget() {
-    return Center(child: Text("Добро пожаловать ${_user.name}!"));
+    return Center(
+        child: Text(
+      "Добро пожаловать ${_user.name}!",
+      style: TextStyle(fontSize: 30, color: Colors.white),
+      textAlign: TextAlign.center,
+    ));
   }
 
   Widget _registrationWidget() {
@@ -77,8 +99,9 @@ class AuthorizationState extends State {
       Container(
           padding: EdgeInsets.fromLTRB(0, 0, 0, 20),
           child: Text("Вход",
-              style: TextStyle(fontSize: 30, color: Colors.blueAccent))),
-      Form(key: _formKey,
+              style: TextStyle(fontSize: 30, color: Colors.white))),
+      Form(
+          key: _formKey,
           child: Container(
               padding: EdgeInsets.fromLTRB(20, 0, 20, 20),
               child: Column(children: [
@@ -110,7 +133,7 @@ class AuthorizationState extends State {
                 ),
               ]))),
       Row(mainAxisAlignment: MainAxisAlignment.center, children: [
-        _raisedButton('Вход', Colors.blueAccent, () {
+        _raisedButton('Вход', Colors.blue[300], () {
           if (_formKey.currentState.validate()) {
             _sendUserLogin(_user);
           }
@@ -118,7 +141,7 @@ class AuthorizationState extends State {
         SizedBox(
           width: 20,
         ),
-        _raisedButton('Регистрация', Colors.greenAccent, () {
+        _raisedButton('Регистрация', Colors.green[300], () {
           setState(() {
             currentState = _registrationWidget();
           });
@@ -129,7 +152,15 @@ class AuthorizationState extends State {
 
   InputDecoration _inputDecoration(String text, IconData icon) {
     return InputDecoration(
-        border: OutlineInputBorder(), labelText: text, icon: Icon(icon));
+        focusedBorder:
+            OutlineInputBorder(borderSide: BorderSide(color: Colors.white)),
+        border: OutlineInputBorder(),
+        labelText: text,
+        labelStyle: TextStyle(color: Colors.white),
+        icon: Icon(
+          icon,
+          color: Colors.white,
+        ));
   }
 
   RaisedButton _raisedButton(String text, Color color, Function onPresed) {
@@ -138,9 +169,10 @@ class AuthorizationState extends State {
       color: color,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
       onPressed: onPresed,
-      child: Text(text),
+      child: Text(
+        text,
+        style: TextStyle(color: Colors.white),
+      ),
     );
   }
-
-  
 }

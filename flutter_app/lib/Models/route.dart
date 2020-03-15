@@ -12,7 +12,7 @@ class RouteData {
 }
 
 class RouteMenuData {
-  String routeNumber;
+  int routeNumber;
   int currentStationIndex;
   int endStationIndex;
   RouteMenuData(){
