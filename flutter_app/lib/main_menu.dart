@@ -124,16 +124,14 @@ class MainMenuState extends State {
                   shape: BoxShape.circle,
                   color: Colors.green[500],
                 ),
-                child: Text(route.routeNumber.toString(),
+                child: Text(route.busNumber,
                     style: TextStyle(color: Colors.black, fontSize: 25),
                     textAlign: TextAlign.center)),
-            title: Row(children: [
-              Text(route.startStation),
-              Icon(Icons.linear_scale),
-              Text(route.endStation)
-            ]),
+            title: 
+              Text(route.routeName),
+            
             onTap: () => {
-                  NavigationManager.push(context, RouteMenu(route.routeNumber))
+                  NavigationManager.push(context, RouteMenu(route.stations))
                 }));
   }
 }

@@ -1,25 +1,26 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_app/Managers/navigation_manager.dart';
 import 'package:flutter_app/Models/route.dart';
+import 'package:flutter_app/Models/station.dart';
 import 'package:flutter_app/map_worker.dart';
 
 import 'Managers/network_manager.dart';
 
 class RouteMenu extends StatefulWidget {
-  final int _routeNumber;
+  final List<Station> _stations;
 
-  RouteMenu(this._routeNumber);
+  RouteMenu(this._stations);
 
   @override
   RouteMenuState createState() {
-    return RouteMenuState(_routeNumber);
+    return RouteMenuState(_stations);
   }
 }
 
 class RouteMenuState extends State {
-  RouteMenuData routeData = RouteMenuData();
-  final int _routeNumber;
-  List<String> _stations;
+  //RouteMenuData routeData = RouteMenuData();
+  final List<Station> _stations;
+  //List<String> _stations;
   static Widget _stationsWidget;
   static Widget _directionWidget;
   int _selectedIndex = 0;
@@ -28,7 +29,7 @@ class RouteMenuState extends State {
     _directionWidget,
   ];
 
-  RouteMenuState(this._routeNumber);
+  RouteMenuState(this._stations);
   void initState() {
     _loadStations();
   }
@@ -38,18 +39,18 @@ class RouteMenuState extends State {
       _widgetOptions[0] = NetworkManager.loadWidget();
       _widgetOptions[1] = NetworkManager.loadWidget();
     });
-    _getStations();
+   // _getStations();
   }
 
-  void _getStations() async {
-    _stations = await NetworkManager.readStations();
-    setState(() {
-      _stationsWidget = _filledsStationsWidget(_stations);
-      _directionWidget = _filledDirrectionWidget(_stations);
-      _widgetOptions[0] = _stationsWidget;
-      _widgetOptions[1] = _directionWidget;
-    });
-  }
+  // void _getStations() async {
+  //   _stations = await NetworkManager.readStations();
+  //   setState(() {
+  //     _stationsWidget = _filledsStationsWidget(_stations);
+  //     _directionWidget = _filledDirrectionWidget(_stations);
+  //     _widgetOptions[0] = _stationsWidget;
+  //     _widgetOptions[1] = _directionWidget;
+  //   });
+  // }
 
   void _onItemTapped(int index) {
     setState(() {
@@ -78,12 +79,12 @@ class RouteMenuState extends State {
   }
 
   void _getToTheMap(MapData mapData) {
-    if (routeData.currentStationIndex == routeData.endStationIndex) {
-      _warningAlert(context);
-      return;
-    } else {
+    // if (routeData.currentStationIndex == routeData.endStationIndex) {
+    //   _warningAlert(context);
+    //   return;
+    // } else {
       NavigationManager.push(context, MapsPage(mapData));
-    }
+   // }
   }
 
   @override
@@ -97,7 +98,7 @@ class RouteMenuState extends State {
         onPressed: () {
           NavigationManager.pop(context);
         },
-        child: Text(_routeNumber.toString(),
+        child: Text("19",
         style: TextStyle(fontSize: 30)),
         elevation: 2.0,
       ),
@@ -147,7 +148,7 @@ class RouteMenuState extends State {
           padding: EdgeInsets.fromLTRB(0, 20, 0, 0),
           child: Center(
               child: Text(
-            "От остановки ${stations[routeData.currentStationIndex]}",
+            "От остановки ${stations[0]}",
             style: TextStyle(fontSize: 25),
           ))),
       Container(
@@ -157,19 +158,19 @@ class RouteMenuState extends State {
             RaisedButton(
                 onPressed: () {
                   setState(() {
-                    routeData.endStationIndex = 0;
+                  //  routeData.endStationIndex = 0;
                   });
-                  _getToTheMap(
-                      new MapData(routeData.currentStationIndex, false));
+                  // _getToTheMap(
+                  //     new MapData(routeData.currentStationIndex, false));
                 },
                 child: Text("В направлении к ${stations[0]}")),
             RaisedButton(
                 onPressed: () {
                   setState(() {
-                    routeData.endStationIndex = stations.length - 1;
+                   // routeData.endStationIndex = stations.length - 1;
                   });
-                  _getToTheMap(
-                      new MapData(routeData.currentStationIndex, true));
+                  // _getToTheMap(
+                  //     new MapData(routeData.currentStationIndex, true));
                 },
                 child: Text("В направлении к ${stations[stations.length - 1]}"))
           ])))
@@ -195,8 +196,8 @@ class RouteMenuState extends State {
             title: Text(stations[index], style: TextStyle(color: Colors.black)),
             onTap: () => {
               setState(() {
-                routeData.currentStationIndex = index;
-                _widgetOptions[1] = _filledDirrectionWidget(_stations);
+                // routeData.currentStationIndex = index;
+                // _widgetOptions[1] = _filledDirrectionWidget(_stations);
               }),
               _onItemTapped(1)
             },

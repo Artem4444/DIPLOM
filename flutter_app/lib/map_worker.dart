@@ -51,13 +51,13 @@ class _MapsPageState extends State {
 
   Future<double> _getDistanceBetwen(Position position, Station station) async {
     return await Geolocator().distanceBetween(position.latitude,
-        position.longitude, station.latitude, station.longitude);
+        position.longitude, station.latLng.latitude, station.latLng.longitude);
   }
 
   void _addStation(Station station) {
     _markers[station.name] = Marker(
         markerId: MarkerId(station.name),
-        position: LatLng(station.latitude, station.longitude),
+        position: LatLng(station.latLng.latitude, station.latLng.longitude),
         rotation: 0,
         icon: BitmapDescriptor.defaultMarkerWithHue(0));
   }
@@ -214,13 +214,19 @@ class MapData {
   }
 
   MapData(this.currentStationIndex, this.toLastStation) {
-    stations.add(new Station(0, "Вересковая 10", 52.136473, 23.712127, null));
-    stations.add(new Station(1, "Вересковая 11", 52.138241, 23.711912, null));
-    stations.add(new Station(2, "Крайняя", 52.140410, 23.705616, null));
-    stations.add(new Station(3, "Возера", 52.142916, 23.706156, null));
-    stations.add(new Station(4, "Калинавая", 52.141592, 23.714120, null));
+    stations.add(
+        new Station("0", "Вересковая 10", LatLng(52.136473, 23.712127), null));
+    stations.add(
+        new Station("1", "Вересковая 11", LatLng(52.138241, 23.711912), null));
     stations
-        .add(new Station(5, "переулок Калиннавый", 52.141066, 23.719452, null));
-    stations.add(new Station(6, "Изумрудная", 52.137555, 23.717920, null));
+        .add(new Station("2", "Крайняя", LatLng(52.140410, 23.705616), null));
+    stations
+        .add(new Station("3", "Возера", LatLng(52.142916, 23.706156), null));
+    stations
+        .add(new Station("4", "Калинавая", LatLng(52.141592, 23.714120), null));
+    stations.add(new Station(
+        "5", "переулок Калиннавый", LatLng(52.141066, 23.719452), null));
+    stations.add(
+        new Station("6", "Изумрудная", LatLng(52.137555, 23.717920), null));
   }
 }
