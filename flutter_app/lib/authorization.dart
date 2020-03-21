@@ -4,7 +4,6 @@ import 'package:flutter_app/Managers/navigation_manager.dart';
 import 'package:flutter_app/Managers/prefs_manager.dart';
 import 'package:flutter_app/Models/user.dart';
 import 'package:flutter_app/main_menu.dart';
-
 import 'Managers/network_manager.dart';
 
 class Authorization extends StatefulWidget {

@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_app/Models/route.dart';
 import 'package:flutter_app/Models/station.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:geolocator/geolocator.dart';
@@ -23,10 +24,9 @@ class _MapsPageState extends State {
 
   @override
   void initState() {
-    _setMapData();
     _getDriverIcon();
-    getRoutPoint();
-    getLocation();
+    _getRoutPoint();
+    _getLocation();
   }
 
   void _getDriverIcon() async {
@@ -38,16 +38,6 @@ class _MapsPageState extends State {
     target: LatLng(52.093877, 23.731953),
     zoom: 10.5,
   );
-
-  void _setMapData() {
-    _mapData.setNextStation();
-  }
-
-  void showNextTarget() {
-    setState(() {
-      _markers.clear();
-    });
-  }
 
   Future<double> _getDistanceBetwen(Position position, Station station) async {
     return await Geolocator().distanceBetween(position.latitude,
@@ -62,20 +52,19 @@ class _MapsPageState extends State {
         icon: BitmapDescriptor.defaultMarkerWithHue(0));
   }
 
-  void getRoutPoint() {
+  void _getRoutPoint() {
     for (var item in _mapData.stations) {
       _addStation(item);
     }
   }
 
-  void updateYourMarker(Position newLocalData) {
+  void _updateYourMarker(Position newLocalData) {
     if (mapUpdate != null) {
       LatLng latlng = LatLng(newLocalData.latitude, newLocalData.longitude);
       this.setState(() {
         _markers["You"] = Marker(
           markerId: MarkerId("You"),
           position: latlng,
-          rotation: newLocalData.heading,
           icon: driverIcon,
           zIndex: 2,
           flat: true,
@@ -84,7 +73,7 @@ class _MapsPageState extends State {
     }
   }
 
-  void getLocation() {
+  void _getLocation() {
     mapUpdate = Timer.periodic(Duration(seconds: 3), (timer) async {
       try {
         if (_controller != null) {
@@ -100,7 +89,7 @@ class _MapsPageState extends State {
               CameraPosition(
                   target: LatLng(position.latitude, position.longitude),
                   zoom: 18.00)));
-          updateYourMarker(position);
+          _updateYourMarker(position);
         }
       } on PlatformException catch (e) {
         if (e.code == 'PERMISSION_DENIED') {
@@ -169,35 +158,29 @@ class _MapsPageState extends State {
 
 class MapData {
   Station nextStation;
-  int currentStationIndex;
   int nextStationIndex;
-  bool toLastStation;
   bool isRouteEnd = false;
   int distance;
-  List<Station> stations = List<Station>();
+  List<Station> stations;
 
   void setNextStation() {
     if (nextStation == null) {
-      nextStation = _chouseNextStation();
+      nextStation = _getNextStation();
       return;
     }
     if (_isCloseDistance()) {
-      nextStation = _chouseNextStation();
+      nextStation = _getNextStation();
       if (nextStation == null) {
         isRouteEnd = true;
-        nextStation = stations[currentStationIndex];
+        nextStation = stations[nextStationIndex];
       }
     }
   }
 
-  Station _chouseNextStation() {
-    int index;
-    if (toLastStation)
-      index = currentStationIndex + 1;
-    else
-      index = currentStationIndex - 1;
+  Station _getNextStation() {
+    int index = nextStationIndex + 1;
     if (_isRightIndex(index)) {
-      currentStationIndex = index;
+      nextStationIndex = index;
       return stations[index];
     }
     return null;
@@ -213,20 +196,9 @@ class MapData {
     return false;
   }
 
-  MapData(this.currentStationIndex, this.toLastStation) {
-    stations.add(
-        new Station("0", "Вересковая 10", LatLng(52.136473, 23.712127), null));
-    stations.add(
-        new Station("1", "Вересковая 11", LatLng(52.138241, 23.711912), null));
-    stations
-        .add(new Station("2", "Крайняя", LatLng(52.140410, 23.705616), null));
-    stations
-        .add(new Station("3", "Возера", LatLng(52.142916, 23.706156), null));
-    stations
-        .add(new Station("4", "Калинавая", LatLng(52.141592, 23.714120), null));
-    stations.add(new Station(
-        "5", "переулок Калиннавый", LatLng(52.141066, 23.719452), null));
-    stations.add(
-        new Station("6", "Изумрудная", LatLng(52.137555, 23.717920), null));
+  MapData(RouteData route, int nextStationindex) {
+    this.nextStationIndex = nextStationIndex;
+    stations = route.stations;
+    nextStation = stations[nextStationindex];
   }
 }

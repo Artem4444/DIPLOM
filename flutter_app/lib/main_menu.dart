@@ -7,7 +7,6 @@ import 'package:flutter_app/Managers/prefs_manager.dart';
 import 'package:flutter_app/Models/route.dart';
 import 'package:flutter_app/authorization.dart';
 import 'package:flutter_app/route_menu.dart';
-
 import 'Models/user.dart';
 import 'authorization.dart';
 
@@ -131,7 +130,7 @@ class MainMenuState extends State {
               Text(route.routeName),
             
             onTap: () => {
-                  NavigationManager.push(context, RouteMenu(route.stations))
+                  NavigationManager.push(context, RouteMenu(route))
                 }));
   }
 }
