@@ -72,9 +72,7 @@ class MainMenuState extends State {
     return Container(
         child: Column(children: [
       Container(
-        decoration: BoxDecoration(
-          color: Colors.blue[50]
-        ),
+        decoration: BoxDecoration(color: Colors.blue[50]),
         padding: EdgeInsets.fromLTRB(5, 10, 5, 10),
         child: Row(children: [
           Row(children: [Icon(Icons.person), Text(user.name)]),
@@ -84,6 +82,7 @@ class MainMenuState extends State {
           Expanded(
               child: RaisedButton(
                   shape: RoundedRectangleBorder(
+                      side: BorderSide(width: 1, color: Colors.black),
                       borderRadius: BorderRadius.circular(20)),
                   color: Colors.blue[300],
                   child: Text("Выйти из профиля"),
@@ -113,24 +112,23 @@ class MainMenuState extends State {
     return Card(
         elevation: 7,
         margin: EdgeInsets.fromLTRB(0, 10, 0, 10),
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(30)),
+        shape: RoundedRectangleBorder(
+            side: BorderSide(width: 1, color: Colors.black),
+            borderRadius: BorderRadius.circular(30)),
         child: ListTile(
             leading: Container(
                 alignment: Alignment.center,
                 height: 45,
                 width: 45,
                 decoration: BoxDecoration(
+                  border: Border.all(color: Colors.black, width: 1),
                   shape: BoxShape.circle,
                   color: Colors.green[500],
                 ),
                 child: Text(route.busNumber,
                     style: TextStyle(color: Colors.black, fontSize: 25),
                     textAlign: TextAlign.center)),
-            title: 
-              Text(route.routeName),
-            
-            onTap: () => {
-                  NavigationManager.push(context, RouteMenu(route))
-                }));
+            title: Text(route.routeName),
+            onTap: () => {NavigationManager.push(context, RouteMenu(route))}));
   }
 }

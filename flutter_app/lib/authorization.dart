@@ -90,11 +90,98 @@ class AuthorizationState extends State {
   }
 
   Widget _registrationWidget() {
-    return Container(child: Column(children: [Text("Регистрация")]));
+    return Center(
+        child: SingleChildScrollView(
+            child:
+                Column(mainAxisAlignment: MainAxisAlignment.center, children: [
+      Container(
+          padding: EdgeInsets.fromLTRB(0, 0, 0, 20),
+          child: Text("Регистрация",
+              style: TextStyle(fontSize: 30, color: Colors.white))),
+      Form(
+          key: _formKey,
+          child: Container(
+              padding: EdgeInsets.fromLTRB(20, 0, 20, 20),
+              child: Column(children: [
+                TextFormField(
+                  decoration: _inputDecoration("Имя", Icons.device_unknown),
+                  validator: (value) {
+                    if (value.isEmpty) {
+                      return 'Введите имя!';
+                    }
+                    _user.mobileNumber = value;
+                    return null;
+                  },
+                ),
+                SizedBox(
+                  height: 15,
+                ),
+                TextFormField(
+                  decoration: _inputDecoration("Фамилия", Icons.device_unknown),
+                  validator: (value) {
+                    if (value.isEmpty) {
+                      return 'Введите фамилию!';
+                    }
+                    _user.mobileNumber = value;
+                    return null;
+                  },
+                ),
+                SizedBox(
+                  height: 15,
+                ),
+                TextFormField(
+                  decoration: _inputDecoration(
+                      "Номер мобильного телефона", Icons.device_unknown),
+                  validator: (value) {
+                    if (value.isEmpty) {
+                      return 'Введите полный номер!';
+                    }
+                    _user.mobileNumber = value;
+                    return null;
+                  },
+                ),
+                SizedBox(
+                  height: 15,
+                ),
+                TextFormField(
+                  obscureText: true,
+                  decoration: _inputDecoration("Пароль", Icons.device_unknown),
+                  validator: (value) {
+                    if (value.isEmpty) {
+                      return 'Введите пароль!';
+                    }
+                    _user.mobileNumber = value;
+                    return null;
+                  },
+                ),
+                SizedBox(
+                  height: 15,
+                ),
+                TextFormField(
+                  obscureText: true,
+                  decoration: _inputDecoration(
+                      "Подтвердите пароль", Icons.device_unknown),
+                  validator: (value) {
+                    if (value.isEmpty) {
+                      return 'Введенные пароли не совпадают!';
+                    }
+                    _user.mobileNumber = value;
+                    return null;
+                  },
+                )
+              ]))),
+      Center(
+          child: _raisedButton('Зарегистрироваться', Colors.green[300], () {
+        setState(() {
+          currentState = _registrationWidget();
+        });
+      }))
+    ])));
   }
 
   Widget _loginWidget() {
-    return Column(mainAxisAlignment: MainAxisAlignment.center, children: [
+    return Center(
+        child: Column(mainAxisAlignment: MainAxisAlignment.center, children: [
       Container(
           padding: EdgeInsets.fromLTRB(0, 0, 0, 20),
           child: Text("Вход",
@@ -146,7 +233,7 @@ class AuthorizationState extends State {
           });
         })
       ])
-    ]);
+    ]));
   }
 
   InputDecoration _inputDecoration(String text, IconData icon) {
@@ -166,7 +253,10 @@ class AuthorizationState extends State {
     return RaisedButton(
       elevation: 3,
       color: color,
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(20),
+        side: BorderSide(width: 1, color: Colors.white),
+      ),
       onPressed: onPresed,
       child: Text(
         text,
