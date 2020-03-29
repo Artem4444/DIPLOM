@@ -1,13 +1,10 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:flutter_app/Managers/network_manager.dart';
 import 'package:flutter_app/Models/route.dart';
 import 'package:flutter_app/Models/station.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:geolocator/geolocator.dart';
-
-import 'Models/passanger.dart';
 
 class MapsPage extends StatefulWidget {
   MapData _mapData;
@@ -24,23 +21,25 @@ class _MapsPageState extends State {
   GoogleMapController _controller;
   Timer mapUpdate;
   BitmapDescriptor driverIcon;
+  Widget bottomWidget;
+
+  static final CameraPosition initialLocation = CameraPosition(
+    target: LatLng(52.093877, 23.731953),
+    zoom: 10.5,
+  );
 
   @override
   void initState() {
     _getDriverIcon();
     _getRoutPoint();
     _getLocation();
+    _setWayWidget();
   }
 
   void _getDriverIcon() async {
     driverIcon = await BitmapDescriptor.fromAssetImage(
         ImageConfiguration(), 'assets/images/driver_icon.png');
   }
-
-  static final CameraPosition initialLocation = CameraPosition(
-    target: LatLng(52.093877, 23.731953),
-    zoom: 10.5,
-  );
 
   Future<double> _getDistanceBetwen(Position position, Station station) async {
     return await Geolocator().distanceBetween(position.latitude,
@@ -50,6 +49,7 @@ class _MapsPageState extends State {
   void _addStation(Station station) {
     _markers[station.name] = Marker(
         markerId: MarkerId(station.name),
+        infoWindow: InfoWindow(title: station.name),
         position: LatLng(station.latLng.latitude, station.latLng.longitude),
         rotation: 0,
         icon: BitmapDescriptor.defaultMarkerWithHue(0));
@@ -59,6 +59,24 @@ class _MapsPageState extends State {
     for (var item in _mapData.stations) {
       _addStation(item);
     }
+  }
+
+  void _setWayWidget() {
+    setState(() {
+      bottomWidget = _wayWidget();
+    });
+  }
+
+  void _setEndWayWidget() {
+    setState(() {
+      bottomWidget = _endWayWidget();
+    });
+  }
+
+  void _setSendDataWidget() {
+    setState(() {
+      bottomWidget = _sendDataWidget();
+    });
   }
 
   void _updateYourMarker(Position newLocalData) {
@@ -75,7 +93,7 @@ class _MapsPageState extends State {
       });
       _controller.animateCamera(CameraUpdate.newCameraPosition(CameraPosition(
           target: LatLng(newLocalData.latitude, newLocalData.longitude),
-          zoom: 18.00)));
+          zoom: 17.00)));
     }
   }
 
@@ -83,6 +101,7 @@ class _MapsPageState extends State {
     setState(() {
       _mapData.setDistance(distance.round());
       _mapData.setNextStation();
+      _setWayWidget();
     });
   }
 
@@ -90,9 +109,10 @@ class _MapsPageState extends State {
     if (!_mapData.isRouteEnd) {
       setState(() {
         _mapData.setNextStationImediatly();
+        _setWayWidget();
       });
     } else {
-      debugPrint("Route is over - reverse or chouse another?");
+      _setEndWayWidget();
     }
   }
 
@@ -108,7 +128,7 @@ class _MapsPageState extends State {
             _toNextStation(distance);
             _updateYourMarker(position);
           } else
-            debugPrint("Route is over - reverse or chouse another?");
+            _setEndWayWidget();
         }
       } on PlatformException catch (e) {
         if (e.code == 'PERMISSION_DENIED') {
@@ -127,55 +147,134 @@ class _MapsPageState extends State {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        body: Column(children: [
-      Flexible(
-          child: GoogleMap(
-        mapType: MapType.normal,
-        initialCameraPosition: initialLocation,
-        markers: Set<Marker>.of(_markers.values),
-        onMapCreated: (GoogleMapController controller) {
-          _controller = controller;
-        },
-      )),
-      Flexible(
-          child: Container(
-              padding: EdgeInsets.fromLTRB(10, 20, 10, 20),
-              child: Column(children: [
-                stationDataItemWidget(
-                    "Направляйтесь к остановке: ", _mapData.nextStation.name),
-                SizedBox(height: 10),
-                stationDataItemWidget(
-                    "Расстояние: ", _mapData.getDistanceAsString()),
-                SizedBox(height: 10),
-                stationDataItemWidget("Выйдет пассажиров: ", ""),
-                SizedBox(height: 10),
-                stationDataItemWidget("Зайдёт пассажиров: ", ""),
-                SizedBox(height: 10),
-                Align(
-                    alignment: Alignment.centerLeft,
-                    child: RaisedButton(
-                      onPressed: () {
-                        if (!_mapData.isRouteEnd) {
-                          _setNextStationImediatly();
-                        }
-                      },
-                      child: Text("Следующая остановка"),
-                    ))
-              ])))
-    ]));
+        body: Container(
+            color: Colors.blue[300],
+            child: Column(children: [
+              Flexible(
+                  child: Container(
+                      decoration: BoxDecoration(
+                          border: Border(
+                              bottom:
+                                  BorderSide(width: 2, color: Colors.black))),
+                      child: GoogleMap(
+                        mapType: MapType.normal,
+                        initialCameraPosition: initialLocation,
+                        markers: Set<Marker>.of(_markers.values),
+                        onMapCreated: (GoogleMapController controller) {
+                          _controller = controller;
+                        },
+                      ))),
+              bottomWidget
+            ])));
   }
 
-  TextStyle stationData() {
-    return TextStyle(fontSize: 18);
+  TextStyle _stationData() {
+    return TextStyle(fontSize: 20, color: Colors.white);
   }
 
-  Widget stationDataItemWidget(String leftSide, String rightSide) {
+  Widget _wayWidget() {
+    return Flexible(
+        child: Container(
+            padding: EdgeInsets.fromLTRB(10, 20, 10, 20),
+            child: Column(children: [
+              _stationDataItemWidget(
+                  "Направляйтесь к остановке: ", _mapData.nextStation.name),
+              SizedBox(height: 20),
+              _stationDataItemWidget(
+                  "Расстояние: ", _mapData.getDistanceAsString()),
+              SizedBox(height: 20),
+              _stationDataItemWidget(
+                  "Выйдет пассажиров: ", _mapData.getPassangerAsString(null)),
+              SizedBox(height: 20),
+              _stationDataItemWidget(
+                  "Зайдёт пассажиров: ", _mapData.getPassangerAsString(null)),
+              SizedBox(height: 20),
+              Align(
+                  alignment: Alignment.centerLeft,
+                  child: SizedBox(
+                      width: 215,
+                      child: RaisedButton(
+                        color: Colors.yellow,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(20),
+                          side: BorderSide(width: 1, color: Colors.black),
+                        ),
+                        onPressed: () {
+                          if (!_mapData.isRouteEnd) {
+                            _setNextStationImediatly();
+                          }
+                        },
+                        child: Row(children: [
+                          Text("Следующая остановка ",
+                              style: TextStyle(color: Colors.white)),
+                          Expanded(
+                              child: Icon(Icons.forward, color: Colors.white)),
+                        ]),
+                      )))
+            ])));
+  }
+
+  Widget _endWayWidget() {
+    return Flexible(
+        child: Container(
+            child: Center(
+                child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+          Container(
+              padding: EdgeInsets.fromLTRB(0, 0, 0, 30),
+              child: Text(
+                "Вы прибыли на конечную!",
+                textAlign: TextAlign.center,
+                style: TextStyle(fontSize: 35, color: Colors.white),
+              )),
+          RaisedButton(
+            color: Colors.green,
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(20),
+              side: BorderSide(width: 1, color: Colors.black),
+            ),
+            onPressed: () {
+              if (_mapData.isRouteEnd) {
+                // _setNextStationImediatly();
+              }
+            },
+            child: Text("В меню выбора маршрутов",
+                style: TextStyle(color: Colors.white)),
+          )
+        ]))));
+  }
+
+  Widget _sendDataWidget() {
+    return Flexible(
+        child: Container(
+            child: Center(
+                child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+          Container(
+            padding: EdgeInsets.fromLTRB(0, 0, 0, 25),
+            child: Text(
+              "Судя по всему вы близко к остановке ${_mapData.nextStation}",
+              textAlign: TextAlign.center,
+              style: TextStyle(fontSize: 35, color: Colors.white),
+            ),
+          ),
+          Text(
+            "Отправка данных...",
+            textAlign: TextAlign.center,
+            style: TextStyle(fontSize: 25, color: Colors.white),
+          ),
+        ]))));
+  }
+
+  Widget _stationDataItemWidget(String leftSide, String rightSide) {
     return Align(
         alignment: Alignment.centerLeft,
         child: FittedBox(
             child: Row(children: [
-          Text(leftSide, style: stationData()),
-          Text(rightSide, style: stationData())
+          Text(leftSide, style: _stationData()),
+          Text(rightSide, style: _stationData())
         ])));
   }
 }
@@ -185,7 +284,6 @@ class MapData {
   int _nextStationIndex;
   bool isRouteEnd = false;
   int _distance;
-  DriverCar driverCar = new DriverCar();
   List<Station> stations;
 
   void setNextStation() {
@@ -236,34 +334,21 @@ class MapData {
 
   String getDistanceAsString() {
     if (_distance == null)
-      return "вычисляется...";
+      return "обновлениe...";
     else
       return "${_distance} м";
+  }
+
+  String getPassangerAsString(int passangerCount) {
+    if (passangerCount == null)
+      return "обновлениe...";
+    else
+      return passangerCount.toString();
   }
 
   MapData(RouteData route, int nextStationIndex) {
     this._nextStationIndex = nextStationIndex;
     stations = route.stations;
     nextStation = stations[this._nextStationIndex];
-  }
-}
-
-class DriverCar {
-  List<Passanger> _passangers;
-
-  DriverCar() {
-    _passangers = new List();
-  }
-
-  void addPassanger(Passanger passanger) {
-    _passangers.add(passanger);
-  }
-
-  void removePassanger(Station station) {
-    for (Passanger passanger in _passangers) {
-      if (passanger.endStation.index == station.index)
-        _passangers.remove(passanger);
-    }
-    NetworkManager.updateStation();
   }
 }
