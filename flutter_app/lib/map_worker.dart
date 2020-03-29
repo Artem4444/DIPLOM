@@ -32,18 +32,13 @@ class _MapsPageState extends State {
   void initState() {
     _getDriverIcon();
     _getRoutPoint();
-    _getLocation();
+    _updateData();
     _setWayWidget();
   }
 
   void _getDriverIcon() async {
     driverIcon = await BitmapDescriptor.fromAssetImage(
         ImageConfiguration(), 'assets/images/driver_icon.png');
-  }
-
-  Future<double> _getDistanceBetwen(Position position, Station station) async {
-    return await Geolocator().distanceBetween(position.latitude,
-        position.longitude, station.latLng.latitude, station.latLng.longitude);
   }
 
   void _addStation(Station station) {
@@ -79,9 +74,9 @@ class _MapsPageState extends State {
     });
   }
 
-  void _updateYourMarker(Position newLocalData) {
+  void _updateYourMarker(Position newPosition) {
     if (mapUpdate != null && _controller != null) {
-      LatLng latlng = LatLng(newLocalData.latitude, newLocalData.longitude);
+      LatLng latlng = LatLng(newPosition.latitude, newPosition.longitude);
       this.setState(() {
         _markers["You"] = Marker(
           markerId: MarkerId("You"),
@@ -92,20 +87,12 @@ class _MapsPageState extends State {
         );
       });
       _controller.animateCamera(CameraUpdate.newCameraPosition(CameraPosition(
-          target: LatLng(newLocalData.latitude, newLocalData.longitude),
+          target: LatLng(newPosition.latitude, newPosition.longitude),
           zoom: 17.00)));
     }
   }
 
-  void _toNextStation(double distance) {
-    setState(() {
-      _mapData.setDistance(distance.round());
-      _mapData.setNextStation();
-      _setWayWidget();
-    });
-  }
-
-  void _setNextStationImediatly() {
+  void _nextStationButtonOnclick() {
     if (!_mapData.isRouteEnd) {
       setState(() {
         _mapData.setNextStationImediatly();
@@ -116,17 +103,20 @@ class _MapsPageState extends State {
     }
   }
 
-  void _getLocation() {
+  void _updateData() {
     mapUpdate = Timer.periodic(Duration(seconds: 3), (timer) async {
       try {
         if (_controller != null) {
           if (!_mapData.isRouteEnd) {
-            Position position = await Geolocator()
-                .getCurrentPosition(desiredAccuracy: LocationAccuracy.high);
-            double distance =
-                await _getDistanceBetwen(position, _mapData.nextStation);
-            _toNextStation(distance);
-            _updateYourMarker(position);
+            await _mapData.getYourPosition();
+            await _mapData.getDistance();
+            if (_mapData.isCloseDistance()) {
+              _setSendDataWidget();
+              _mapData.toNextStation();
+            } else {
+              _setWayWidget();
+              _updateYourMarker(_mapData.position);
+            }
           } else
             _setEndWayWidget();
         }
@@ -201,7 +191,7 @@ class _MapsPageState extends State {
                         ),
                         onPressed: () {
                           if (!_mapData.isRouteEnd) {
-                            _setNextStationImediatly();
+                            _nextStationButtonOnclick();
                           }
                         },
                         child: Row(children: [
@@ -236,7 +226,7 @@ class _MapsPageState extends State {
             ),
             onPressed: () {
               if (_mapData.isRouteEnd) {
-                // _setNextStationImediatly();
+                print("to menu");
               }
             },
             child: Text("В меню выбора маршрутов",
@@ -255,7 +245,7 @@ class _MapsPageState extends State {
           Container(
             padding: EdgeInsets.fromLTRB(0, 0, 0, 25),
             child: Text(
-              "Судя по всему вы близко к остановке ${_mapData.nextStation}",
+              "Судя по всему вы близко к остановке ${_mapData.nextStation.name}",
               textAlign: TextAlign.center,
               style: TextStyle(fontSize: 35, color: Colors.white),
             ),
@@ -281,22 +271,17 @@ class _MapsPageState extends State {
 
 class MapData {
   Station nextStation;
+  Position position;
   int _nextStationIndex;
   bool isRouteEnd = false;
-  int _distance;
+  double _distance;
   List<Station> stations;
 
-  void setNextStation() {
+  void toNextStation() {
+    nextStation = _getNextStation();
     if (nextStation == null) {
-      nextStation = _getNextStation();
-      return;
-    }
-    if (_isCloseDistance()) {
-      nextStation = _getNextStation();
-      if (nextStation == null) {
-        isRouteEnd = true;
-        nextStation = stations[_nextStationIndex];
-      }
+      isRouteEnd = true;
+      nextStation = stations[_nextStationIndex];
     }
   }
 
@@ -307,6 +292,20 @@ class MapData {
       isRouteEnd = true;
       nextStation = stations[_nextStationIndex];
     }
+  }
+
+  getYourPosition() async {
+    position = await Geolocator()
+        .getCurrentPosition(desiredAccuracy: LocationAccuracy.high);
+  }
+
+  getDistance() async {
+    _distance = await _getDistanceBetwen(position, nextStation);
+  }
+
+  Future<double> _getDistanceBetwen(Position position, Station station) async {
+    return await Geolocator().distanceBetween(position.latitude,
+        position.longitude, station.latLng.latitude, station.latLng.longitude);
   }
 
   Station _getNextStation() {
@@ -323,20 +322,16 @@ class MapData {
     return false;
   }
 
-  bool _isCloseDistance() {
+  bool isCloseDistance() {
     if (_distance < 50) return true;
     return false;
-  }
-
-  void setDistance(int dist) {
-    _distance = dist;
   }
 
   String getDistanceAsString() {
     if (_distance == null)
       return "обновлениe...";
     else
-      return "${_distance} м";
+      return "${_distance.round()} м";
   }
 
   String getPassangerAsString(int passangerCount) {
