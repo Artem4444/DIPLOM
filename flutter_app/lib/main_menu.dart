@@ -33,7 +33,7 @@ class MainMenuState extends State {
   }
 
   _setUserName() async {
-    user.name = await PrefsManager.getUserName();
+    user.firstName = await PrefsManager.getUserName();
   }
 
   @override
@@ -75,7 +75,7 @@ class MainMenuState extends State {
         decoration: BoxDecoration(color: Colors.blue[50]),
         padding: EdgeInsets.fromLTRB(5, 10, 5, 10),
         child: Row(children: [
-          Row(children: [Icon(Icons.person), Text(user.name)]),
+          Row(children: [Icon(Icons.person), Text(user.firstName)]),
           SizedBox(
             width: 130,
           ),

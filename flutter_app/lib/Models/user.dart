@@ -1,9 +1,11 @@
 class User {
-  String name;
+  String firstName;
+  String secondName;
   String mobileNumber;
   String password;
   User() {
-    name = "";
+    firstName = "";
+    secondName = "";
     mobileNumber = "";
     password = "";
   }

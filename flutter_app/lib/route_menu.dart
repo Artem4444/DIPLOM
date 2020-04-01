@@ -53,7 +53,9 @@ class RouteMenuState extends State {
                   end: Alignment.bottomLeft,
                   colors: [Colors.blue[200], Colors.blueAccent[400]])),
           child: Center(
-            child: _widgetOptions.elementAt(_selectedIndex),
+            child: AnimatedSwitcher(
+                duration: Duration(seconds: 1),
+                child: _widgetOptions.elementAt(_selectedIndex)),
           )),
       floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
       floatingActionButton: FloatingActionButton(
