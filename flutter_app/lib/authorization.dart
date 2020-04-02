@@ -69,6 +69,8 @@ class AuthorizationState extends State {
 
   @override
   void initState() {
+    NetworkManager.startListenConectionState(
+        () => {print("NOOOOOOOOOOOOOOOOOO!!!!")});
     setState(() {
       currentState = NetworkManager.loadWidget();
     });
@@ -77,6 +79,7 @@ class AuthorizationState extends State {
 
   @override
   void dispose() {
+    NetworkManager.removeConectionListener();
     super.dispose();
   }
 
