@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_app/Managers/network_manager.dart';
 import 'package:flutter_app/Models/route.dart';
 import 'package:flutter_app/Models/station.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
@@ -34,6 +35,7 @@ class _MapsPageState extends State {
     _getRoutPoint();
     _updateData();
     _setWayWidget();
+    NetworkManager.startListenConectionState(_setNoInternetWidget);
   }
 
   void _getDriverIcon() async {
@@ -74,6 +76,12 @@ class _MapsPageState extends State {
     });
   }
 
+  void _setNoInternetWidget() {
+    setState(() {
+      bottomWidget = _noInternetWidget();
+    });
+  }
+
   void _updateYourMarker(Position newPosition) {
     if (mapUpdate != null && _controller != null) {
       LatLng latlng = LatLng(newPosition.latitude, newPosition.longitude);
@@ -106,6 +114,9 @@ class _MapsPageState extends State {
   void _updateData() {
     mapUpdate = Timer.periodic(Duration(seconds: 3), (timer) async {
       try {
+        if (!NetworkManager.isConected) {
+          return;
+        }
         if (_controller != null) {
           if (!_mapData.isRouteEnd) {
             await _mapData.getYourPosition();
@@ -131,6 +142,7 @@ class _MapsPageState extends State {
   @override
   void dispose() {
     mapUpdate.cancel();
+    NetworkManager.removeConectionListener();
     super.dispose();
   }
 
@@ -245,13 +257,28 @@ class _MapsPageState extends State {
           Container(
             padding: EdgeInsets.fromLTRB(0, 0, 0, 25),
             child: Text(
-              "Судя по всему вы близко к остановке ${_mapData.nextStation.name}",
+              "Судя по все��у вы близко к остановке ${_mapData.nextStation.name}",
               textAlign: TextAlign.center,
               style: TextStyle(fontSize: 35, color: Colors.white),
             ),
           ),
           Text(
             "Отправка данных...",
+            textAlign: TextAlign.center,
+            style: TextStyle(fontSize: 25, color: Colors.white),
+          ),
+        ]))));
+  }
+
+  Widget _noInternetWidget() {
+    return Flexible(
+        child: Container(
+            child: Center(
+                child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+          Text(
+            "Не удается обновить данные. Проверьте подключение к интернету",
             textAlign: TextAlign.center,
             style: TextStyle(fontSize: 25, color: Colors.white),
           ),

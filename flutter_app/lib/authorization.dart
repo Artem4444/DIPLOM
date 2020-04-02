@@ -14,17 +14,18 @@ class Authorization extends StatefulWidget {
   }
 }
 
+enum AuthorizationPage { login, registration, greatings }
+
 class AuthorizationState extends State {
   final _loginFormKey = GlobalKey<FormState>();
   final _registrationFormKey = GlobalKey<FormState>();
   static Widget currentState;
   User _registrationUser = new User();
   User _loginUser = new User();
+  AuthorizationPage authorizationPage;
   double _greatingsOpacity = 0;
-  bool _isLoginWidget;
-  bool _canMoveToMenu;
 
-  void _getPrefs() async {
+  void _getLocalData() async {
     _loginUser.firstName = await PrefsManager.getUserName();
     if (_loginUser.firstName == null || _loginUser.firstName == "")
       _showLogin();
@@ -35,7 +36,7 @@ class AuthorizationState extends State {
   void _showLogin() {
     setState(() {
       currentState = _loginWidget();
-      _isLoginWidget = true;
+      authorizationPage = AuthorizationPage.login;
       _greatingsOpacity = 1;
     });
   }
@@ -43,38 +44,60 @@ class AuthorizationState extends State {
   void _showRegistration() {
     setState(() {
       currentState = _registrationWidget();
-      _isLoginWidget = false;
+      authorizationPage = AuthorizationPage.registration;
     });
+  }
+
+  void _showNoConection() {
+    setState(() {
+      currentState = _noInternetWidget();
+    });
+  }
+
+  void _setPreviousWidget() {
+    if (authorizationPage == AuthorizationPage.login)
+      _showLogin();
+    else
+      _showRegistration();
   }
 
   void _showGreatings() {
     setState(() {
       currentState = _greatingsWidget();
-      _isLoginWidget = false;
-      _canMoveToMenu = true;
+      authorizationPage = AuthorizationPage.greatings;
       _greatingsOpacity = 1;
     });
     Timer(Duration(seconds: 3), () {
-      if (!_isLoginWidget && _canMoveToMenu)
+      if (authorizationPage == AuthorizationPage.greatings)
         NavigationManager.push(context, MainMenu());
     });
   }
 
   void _sendUserLogin(User user) {
-    if (true) {
+    if (!NetworkManager.isConected)
+      _showNoConection();
+    else if (true) {
       PrefsManager.setUserName("Artem");
       _showGreatings();
+    }
+  }
+
+  void _registrateUser(User user) {
+    if (!NetworkManager.isConected)
+      _showNoConection();
+    else if (true) {
+      _showLogin();
     }
   }
 
   @override
   void initState() {
     NetworkManager.startListenConectionState(
-        () => {print("NOOOOOOOOOOOOOOOOOO!!!!")});
+        () => {print("Conection lost: AUTHORIZATION")});
     setState(() {
       currentState = NetworkManager.loadWidget();
     });
-    _getPrefs();
+    _getLocalData();
   }
 
   @override
@@ -84,13 +107,13 @@ class AuthorizationState extends State {
   }
 
   _backPressHandler() {
-    if (_isLoginWidget)
+    if (authorizationPage == AuthorizationPage.login ||
+        authorizationPage == null)
       exit(0);
     else
       setState(() {
         currentState = _loginWidget();
-        _isLoginWidget = true;
-        _canMoveToMenu = false;
+        authorizationPage = AuthorizationPage.login;
       });
   }
 
@@ -119,6 +142,21 @@ class AuthorizationState extends State {
                         child: AnimatedSwitcher(
                             duration: Duration(seconds: 1),
                             child: currentState))))));
+  }
+
+  Widget _noInternetWidget() {
+    return Center(
+        child: Column(mainAxisAlignment: MainAxisAlignment.center, children: [
+      Text(
+        "Не удается отправить данные. Проверьте подключение к интернету",
+        style: TextStyle(fontSize: 30, color: Colors.white),
+        textAlign: TextAlign.center,
+      ),
+      Container(
+          padding: EdgeInsets.fromLTRB(0, 20, 0, 0),
+          child:
+              _raisedButton("Продолжить", Colors.red[400], _setPreviousWidget))
+    ]));
   }
 
   Widget _greatingsWidget() {
@@ -233,7 +271,7 @@ class AuthorizationState extends State {
             padding: EdgeInsets.fromLTRB(5, 0, 5, 0),
             child: _raisedButton('Зарегистрироваться', Colors.green[300], () {
               if (_registrationFormKey.currentState.validate()) {
-                print("registration!");
+                _registrateUser(_registrationUser);
               }
             })),
         Container(
