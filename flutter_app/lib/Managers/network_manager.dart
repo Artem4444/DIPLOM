@@ -3,27 +3,67 @@ import 'package:flutter/material.dart';
 import 'package:flutter_app/Models/route.dart';
 import 'package:flutter/services.dart' show rootBundle;
 import 'package:connectivity/connectivity.dart';
+import 'package:http/http.dart' as http;
 
 class NetworkManager {
   static var _internetConectionEvent;
   static bool isConected;
   static Function onConectionLost;
+
   static Future<String> _loadAsRoutesAsset() async {
     return await rootBundle.loadString('assets/fakeData/routes.json');
   }
 
-  static Future<List<RouteData>> readRoutes() async {
-    String jsonString = await _loadAsRoutesAsset();
+// Future<Album> fetchAlbum() async {
+//   final response = await http.get('https://jsonplaceholder.typicode.com/albums/1');
+
+//   if (response.statusCode == 200) {
+//     // If the server did return a 200 OK response,
+//     // then parse the JSON.
+//     return Album.fromJson(json.decode(response.body));
+//   } else {
+//     // If the server did not return a 200 OK response,
+//     // then throw an exception.
+//     throw Exception('Failed to load album');
+//   }
+// }
+
+//  var client = createHttpClient();
+//       client.get(new Uri.http("locahost:8000", "/category"));
+
+// final response = await http.get('http://localhost:8080/api/routes/');
+  //String jsonString = response.body;
+//http://127.0.0.1:8080/
+
+  // static Future<List<RouteData>> getRoutes() async {
+  //   String jsonString = await _loadAsRoutesAsset();
+  //    print(jsonString);
+  //   var list = jsonDecode(jsonString)['routes'] as List;
+  //   List<RouteData> routes =
+  //       list.map((data) => RouteData.fromJson(data)).toList();
+  //   return routes;
+  // }
+
+  static Future<List<RouteData>> getRoutes() async {
+    final response = await http.get('http://10.0.2.2:8080/api/routes/');
+    String jsonString = response.body;
     var list = jsonDecode(jsonString)['routes'] as List;
     List<RouteData> routes =
         list.map((data) => RouteData.fromJson(data)).toList();
     return routes;
   }
 
-  static Future<int> getPassengerCountFromStation() {}
-  static Future<int> updatePassangerCountInCar() {}
+  static Future<int> getWaitingPassangers(int stationId) async {
 
-  static void updateStation() {}
+  }
+
+  static Future<int> getReadyPassangers()async {
+    
+  }
+
+  static void updateStation(int stationId)async {
+
+  }
 
   static void startListenConectionState(Function onConectionLostHandler) {
     onConectionLost = onConectionLostHandler;

@@ -23,7 +23,7 @@ class MainMenuState extends State {
   Widget currentState;
 
   _getRoutes() async {
-    List<RouteData> routesDatas = await NetworkManager.readRoutes();
+    List<RouteData> routesDatas = await NetworkManager.getRoutes();
     setState(() {
       for (var route in routesDatas) {
         routeList.add(_listItem(route));

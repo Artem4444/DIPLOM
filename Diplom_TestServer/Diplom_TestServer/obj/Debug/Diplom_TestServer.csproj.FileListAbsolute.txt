@@ -1,0 +1,14 @@
+/Users/artem/Projects/Diplom_TestServer/Diplom_TestServer/bin/Diplom_TestServer.dll
+/Users/artem/Projects/Diplom_TestServer/Diplom_TestServer/bin/Diplom_TestServer.pdb
+/Users/artem/Projects/Diplom_TestServer/Diplom_TestServer/bin/Newtonsoft.Json.dll
+/Users/artem/Projects/Diplom_TestServer/Diplom_TestServer/bin/System.Net.Http.Formatting.dll
+/Users/artem/Projects/Diplom_TestServer/Diplom_TestServer/bin/System.Web.Http.dll
+/Users/artem/Projects/Diplom_TestServer/Diplom_TestServer/bin/System.Web.Http.WebHost.dll
+/Users/artem/Projects/Diplom_TestServer/Diplom_TestServer/bin/Newtonsoft.Json.xml
+/Users/artem/Projects/Diplom_TestServer/Diplom_TestServer/bin/System.Net.Http.Formatting.xml
+/Users/artem/Projects/Diplom_TestServer/Diplom_TestServer/bin/System.Web.Http.xml
+/Users/artem/Projects/Diplom_TestServer/Diplom_TestServer/bin/System.Web.Http.WebHost.xml
+/Users/artem/Projects/Diplom_TestServer/Diplom_TestServer/obj/Debug/Diplom_TestServer.csproj.CopyComplete
+/Users/artem/Projects/Diplom_TestServer/Diplom_TestServer/obj/Debug/Diplom_TestServer.dll
+/Users/artem/Projects/Diplom_TestServer/Diplom_TestServer/obj/Debug/Diplom_TestServer.pdb
+/Users/artem/Projects/Diplom_TestServer/Diplom_TestServer/obj/Debug/Diplom_TestServer.csprojAssemblyReference.cache
