@@ -1,6 +1,7 @@
 import 'dart:io';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_app/Managers/app_repository.dart';
 import 'package:flutter_app/Managers/navigation_manager.dart';
 import 'package:flutter_app/Managers/network_manager.dart';
 import 'package:flutter_app/Managers/prefs_manager.dart';
@@ -18,7 +19,7 @@ class MainMenu extends StatefulWidget {
 }
 
 class MainMenuState extends State {
-  User user = User();
+  User user = User("","","","","");
   List<Widget> routeList = List<Widget>();
   Widget currentState;
 
@@ -33,7 +34,7 @@ class MainMenuState extends State {
   }
 
   _setUserName() async {
-    user.firstName = await PrefsManager.getUserName();
+   // user.firstName = await PrefsManager.getUserName();
   }
 
   @override

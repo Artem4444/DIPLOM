@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:convert';
 import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter_app/Managers/navigation_manager.dart';
@@ -20,13 +21,13 @@ class AuthorizationState extends State {
   final _loginFormKey = GlobalKey<FormState>();
   final _registrationFormKey = GlobalKey<FormState>();
   static Widget currentState;
-  User _registrationUser = new User();
-  User _loginUser = new User();
+  User _registrationUser = new User("", "", "", "", "");
+  User _loginUser = new User("", "", "", "", "");
   AuthorizationPage authorizationPage;
   double _greatingsOpacity = 0;
 
   void _getLocalData() async {
-    _loginUser.firstName = await PrefsManager.getUserName();
+   // _loginUser.firstName = await PrefsManager.getUserName();
     if (_loginUser.firstName == null || _loginUser.firstName == "")
       _showLogin();
     else
@@ -54,6 +55,18 @@ class AuthorizationState extends State {
     });
   }
 
+  void _showWarning(String warning) {
+    setState(() {
+      currentState = _responseWidget(warning, Colors.red[400]);
+    });
+  }
+
+  void _showSucces(String succesMesage) {
+    setState(() {
+      currentState = _responseWidget(succesMesage, Colors.green[400]);
+    });
+  }
+
   void _setPreviousWidget() {
     if (authorizationPage == AuthorizationPage.login)
       _showLogin();
@@ -73,27 +86,38 @@ class AuthorizationState extends State {
     });
   }
 
-  void _sendUserLogin(User user) {
+  _sendUserLogin(User user) async {
     if (!NetworkManager.isConected)
       _showNoConection();
-    else if (true) {
-      PrefsManager.setUserName("Artem");
-      _showGreatings();
+    else {
+      var response = await NetworkManager.login(user);
+      if (response.statusCode == 200) {
+        Map userMap = jsonDecode(response.body);
+        User user = User.fromJson(userMap);
+        PrefsManager.setUserJson(response.body);
+        _showGreatings();
+      } else
+        _showWarning(response.body);
     }
   }
 
-  void _registrateUser(User user) {
+  void _registrateUser(User user) async {
     if (!NetworkManager.isConected)
       _showNoConection();
-    else if (true) {
-      _showLogin();
+    else {
+      var response = await NetworkManager.registration(user);
+      if (response.statusCode == 200) {
+        _showSucces(response.body);
+        authorizationPage = AuthorizationPage.login;
+      } else {
+        _showWarning(response.body);
+      }
     }
   }
 
   @override
   void initState() {
-    NetworkManager.startListenConectionState(
-        () => {print("Conection lost: AUTHORIZATION")});
+    NetworkManager.startListenConectionState(null);
     setState(() {
       currentState = NetworkManager.loadWidget();
     });
@@ -156,6 +180,20 @@ class AuthorizationState extends State {
           padding: EdgeInsets.fromLTRB(0, 20, 0, 0),
           child:
               _raisedButton("Продолжить", Colors.red[400], _setPreviousWidget))
+    ]));
+  }
+
+  Widget _responseWidget(String warning, Color color) {
+    return Center(
+        child: Column(mainAxisAlignment: MainAxisAlignment.center, children: [
+      Text(
+        warning,
+        style: TextStyle(fontSize: 30, color: Colors.white),
+        textAlign: TextAlign.center,
+      ),
+      Container(
+          padding: EdgeInsets.fromLTRB(0, 20, 0, 0),
+          child: _raisedButton("Продолжить", color, _setPreviousWidget))
     ]));
   }
 

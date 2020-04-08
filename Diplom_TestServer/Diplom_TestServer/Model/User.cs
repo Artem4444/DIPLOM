@@ -3,18 +3,18 @@ namespace Diplom_TestServer.Model
 {
     public class User
     {
-        public int Id { get; set; }
-        public string FirstName { get; set; }
-        public string SecondName { get; set; }
-        public string MobileNumber { get; set; }
-        public string Password { get; set; }
+        public string id { get; set; }
+        public string firstName { get; set; }
+        public string secondName { get; set; }
+        public string mobileNumber { get; set; }
+        public string password { get; set; }
         public User()
         {
-            Id = 0;
-            FirstName = "Артем";
-            SecondName = "Супрунович";
-            MobileNumber = "+375298034287";
-            Password = "1111";
+            id = "0";
+            firstName = "Артем";
+            secondName = "Супрунович";
+            mobileNumber = "+375298034287";
+            password = "1111";
         }
 
     }

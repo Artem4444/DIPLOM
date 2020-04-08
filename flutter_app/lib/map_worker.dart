@@ -121,6 +121,7 @@ class _MapsPageState extends State {
           if (!_mapData.isRouteEnd) {
             await _mapData.getYourPosition();
             await _mapData.getDistance();
+            await _mapData.updatePassangers();
             if (_mapData.isCloseDistance()) {
               _setSendDataWidget();
               _mapData.toNextStation();
@@ -186,10 +187,10 @@ class _MapsPageState extends State {
                   "Расстояние: ", _mapData.getDistanceAsString()),
               SizedBox(height: 20),
               _stationDataItemWidget(
-                  "Выйдет пассажиров: ", _mapData.getPassangerAsString(null)),
+                  "Выйдет пассажиров: ", _mapData.getReadyPassangerAsString()),
               SizedBox(height: 20),
-              _stationDataItemWidget(
-                  "Зайдёт пассажиров: ", _mapData.getPassangerAsString(null)),
+              _stationDataItemWidget("Зайдёт пассажиров: ",
+                  _mapData.getWaitingPassangerAsString()),
               SizedBox(height: 20),
               Align(
                   alignment: Alignment.centerLeft,
@@ -257,7 +258,7 @@ class _MapsPageState extends State {
           Container(
             padding: EdgeInsets.fromLTRB(0, 0, 0, 25),
             child: Text(
-              "Судя по все��у вы близко к остановке ${_mapData.nextStation.name}",
+              "Судя по всему вы близко к остановке ${_mapData.nextStation.name}",
               textAlign: TextAlign.center,
               style: TextStyle(fontSize: 35, color: Colors.white),
             ),
@@ -300,6 +301,8 @@ class MapData {
   Station nextStation;
   Position position;
   int _nextStationIndex;
+  int _waitingPassangerCount;
+  int _readyPassangerCount;
   bool isRouteEnd = false;
   double _distance;
   List<Station> stations;
@@ -319,6 +322,11 @@ class MapData {
       isRouteEnd = true;
       nextStation = stations[_nextStationIndex];
     }
+  }
+
+  updatePassangers() async {
+    _waitingPassangerCount = await NetworkManager.getWaitingPassangers(0);
+    _readyPassangerCount = await NetworkManager.getReadyPassangers();
   }
 
   getYourPosition() async {
@@ -361,11 +369,18 @@ class MapData {
       return "${_distance.round()} м";
   }
 
-  String getPassangerAsString(int passangerCount) {
-    if (passangerCount == null)
+  String getWaitingPassangerAsString() {
+    if (_waitingPassangerCount == null)
       return "обновлениe...";
     else
-      return passangerCount.toString();
+      return _waitingPassangerCount.toString();
+  }
+
+  String getReadyPassangerAsString() {
+    if (_readyPassangerCount == null)
+      return "обновлениe...";
+    else
+      return _readyPassangerCount.toString();
   }
 
   MapData(RouteData route, int nextStationIndex) {

@@ -1,15 +1,14 @@
 import 'package:shared_preferences/shared_preferences.dart';
 
 class PrefsManager {
-  static Future<String> getUserName() async {
+  static Future<String> getUserJson() async {
     SharedPreferences pref = await SharedPreferences.getInstance();
-    return pref.getString("UserName") ?? "";
+    return pref.getString("UserJson") ?? "";
   }
 
-  static void setUserName(String name) async {
+  static void setUserJson(String json) async {
     SharedPreferences pref = await SharedPreferences.getInstance();
-    ;
-    pref.setString("UserName", name);
+    pref.setString("UserJson", json);
   }
 
   static void clearPrefs() async {

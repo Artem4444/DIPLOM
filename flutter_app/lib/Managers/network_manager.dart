@@ -1,8 +1,8 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:flutter_app/Models/route.dart';
-import 'package:flutter/services.dart' show rootBundle;
 import 'package:connectivity/connectivity.dart';
+import 'package:flutter_app/Models/user.dart';
 import 'package:http/http.dart' as http;
 
 class NetworkManager {
@@ -10,9 +10,7 @@ class NetworkManager {
   static bool isConected;
   static Function onConectionLost;
 
-  static Future<String> _loadAsRoutesAsset() async {
-    return await rootBundle.loadString('assets/fakeData/routes.json');
-  }
+
 
 // Future<Album> fetchAlbum() async {
 //   final response = await http.get('https://jsonplaceholder.typicode.com/albums/1');
@@ -53,17 +51,35 @@ class NetworkManager {
     return routes;
   }
 
+  static Future<http.Response> login(User user) async {
+    String adress =
+        "http://10.0.2.2:8080/api/drivers/login?mobile=${user.mobileNumber.replaceFirst('+','')}&password=${user.password}";
+    final response = await http.get(adress);
+    return response;
+  }
+
+  static Future<http.Response> registration(User user)async{
+   String jsonUser = jsonEncode(user);
+   String adress = "http://10.0.2.2:8080/api/drivers/login?driver=$jsonUser";
+    final response = await http.post(adress);
+   return response;
+  }
+
   static Future<int> getWaitingPassangers(int stationId) async {
-
+    String adress =
+        "http://10.0.2.2:8080/api/stations/getstationpassangers?stationid=$stationId";
+    final response = await http.get(adress);
+    return int.parse(response.body);
   }
 
-  static Future<int> getReadyPassangers()async {
-    
+  static Future<int> getReadyPassangers() async {
+    String adress =
+        "http://10.0.2.2:8080/api/stations/getcarpassangers?driverid=${0}";
+    final response = await http.get(adress);
+    return int.parse(response.body);
   }
 
-  static void updateStation(int stationId)async {
-
-  }
+  static void updateStation(int stationId) async {}
 
   static void startListenConectionState(Function onConectionLostHandler) {
     onConectionLost = onConectionLostHandler;
