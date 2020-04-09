@@ -21,20 +21,34 @@ class MainMenuState extends State {
   Widget currentState;
 
   _getRoutes() async {
-    List<RouteData> routesDatas = await NetworkManager.getRoutes();
+    _setLoadingWidget();
+    try {
+      List<RouteData> routesDatas = await NetworkManager.getRoutes();
+      setState(() {
+        for (var route in routesDatas) {
+          routeList.add(_listItem(route));
+        }
+        currentState = _routeList();
+      });
+    } on NotReachServerException {
+      _showWarning("Не удается связаться с сервером");
+    }
+  }
+
+  void _showWarning(String warning) {
     setState(() {
-      for (var route in routesDatas) {
-        routeList.add(_listItem(route));
-      }
-      currentState = _routeList();
+      currentState = _responseWidget(warning, Colors.red[400]);
+    });
+  }
+
+  void _setLoadingWidget() {
+    setState(() {
+      currentState = NetworkManager.loadWidget();
     });
   }
 
   @override
   void initState() {
-    setState(() {
-      currentState = NetworkManager.loadWidget();
-    });
     _getRoutes();
   }
 
@@ -68,7 +82,10 @@ class MainMenuState extends State {
         decoration: BoxDecoration(color: Colors.blue[50]),
         padding: EdgeInsets.fromLTRB(5, 10, 5, 10),
         child: Row(children: [
-          Row(children: [Icon(Icons.person), Text(AppRepository.localUser.firstName)]),
+          Row(children: [
+            Icon(Icons.person),
+            Text(AppRepository.localUser.firstName)
+          ]),
           SizedBox(
             width: 130,
           ),
@@ -123,5 +140,34 @@ class MainMenuState extends State {
                     textAlign: TextAlign.center)),
             title: Text(route.routeName),
             onTap: () => {NavigationManager.push(context, RouteMenu(route))}));
+  }
+  
+  RaisedButton _raisedButton(String text, Color color, Function onPresed) {
+    return RaisedButton(
+      elevation: 3,
+      color: color,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(20),
+        side: BorderSide(width: 1, color: Colors.white),
+      ),
+      onPressed: onPresed,
+      child: Text(
+        text,
+        style: TextStyle(color: Colors.white),
+      ),
+    );
+  }
+    Widget _responseWidget(String warning, Color color) {
+    return Center(
+        child: Column(mainAxisAlignment: MainAxisAlignment.center, children: [
+      Text(
+        warning,
+        style: TextStyle(fontSize: 30, color: Colors.white),
+        textAlign: TextAlign.center,
+      ),
+      Container(
+          padding: EdgeInsets.fromLTRB(0, 20, 0, 0),
+          child: _raisedButton("Повторить", color, _getRoutes()))
+    ]));
   }
 }

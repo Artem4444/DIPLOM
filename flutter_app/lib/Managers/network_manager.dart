@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:flutter_app/Models/route.dart';
@@ -5,46 +6,68 @@ import 'package:connectivity/connectivity.dart';
 import 'package:flutter_app/Models/user.dart';
 import 'package:http/http.dart' as http;
 
+import 'app_repository.dart';
+
 class NetworkManager {
   static var _internetConectionEvent;
   static bool isConected;
   static Function onConectionLost;
 
   static Future<List<RouteData>> getRoutes() async {
-    final response = await http.get('http://10.0.2.2:8080/api/routes/');
-    String jsonString = response.body;
-    var list = jsonDecode(jsonString)['routes'] as List;
-    List<RouteData> routes =
-        list.map((data) => RouteData.fromJson(data)).toList();
-    return routes;
+    try {
+      final response = await http.get('http://10.0.2.2:8080/api/routes/');
+      String jsonString = response.body;
+      var list = jsonDecode(jsonString)['routes'] as List;
+      List<RouteData> routes =
+          list.map((data) => RouteData.fromJson(data)).toList();
+      return routes;
+    } on Exception {
+      throwCustomException();
+    }
   }
 
   static Future<http.Response> login(User user) async {
-    String adress =
-        "http://10.0.2.2:8080/api/drivers/login?mobile=${user.mobileNumber.replaceFirst('+','')}&password=${user.password}";
-    final response = await http.get(adress);
-    return response;
+    try {
+      String adress =
+          "http://10.0.2.2:8080/api/drivers/login?mobile=${user.mobileNumber.replaceFirst('+', '')}&password=${user.password}";
+      final response = await http.get(adress);
+      return response;
+    } on Exception {
+      throwCustomException();
+    }
   }
 
-  static Future<http.Response> registration(User user)async{
-   String jsonUser = jsonEncode(user);
-   String adress = "http://10.0.2.2:8080/api/drivers/login?driver=$jsonUser";
-    final response = await http.post(adress);
-   return response;
+  static Future<http.Response> registration(User user) async {
+    try {
+      String jsonUser = jsonEncode(user);
+      String adress = "http://10.0.2.2:8080/api/drivers/login?driver=$jsonUser";
+      final response = await http.post(adress);
+      return response;
+    } on Exception {
+      throwCustomException();
+    }
   }
 
   static Future<int> getWaitingPassangers(int stationId) async {
-    String adress =
-        "http://10.0.2.2:8080/api/stations/getstationpassangers?stationid=$stationId";
-    final response = await http.get(adress);
-    return int.parse(response.body);
+    try {
+      String adress =
+          "http://10.0.2.2:8080/api/stations/getstationpassangers?stationid=$stationId";
+      final response = await http.get(adress);
+      return int.parse(response.body);
+    } on Exception {
+      throwCustomException();
+    }
   }
 
   static Future<int> getReadyPassangers() async {
-    String adress =
-        "http://10.0.2.2:8080/api/stations/getcarpassangers?driverid=${0}";
-    final response = await http.get(adress);
-    return int.parse(response.body);
+    try {
+      String adress =
+          "http://10.0.2.2:8080/api/stations/getcarpassangers?driverid=${AppRepository.localUser.id}";
+      final response = await http.get(adress);
+      return int.parse(response.body);
+    } on Exception {
+      throwCustomException();
+    }
   }
 
   static void updateStation(int stationId) async {}
@@ -63,6 +86,10 @@ class NetworkManager {
   static void removeConectionListener() {
     _internetConectionEvent.cancel();
     onConectionLost = null;
+  }
+
+  static void throwCustomException() {
+    throw new NotReachServerException();
   }
 
   static Future<bool> getConectionStatus() async {
@@ -88,3 +115,6 @@ class NetworkManager {
     ));
   }
 }
+
+class NotReachServerException implements Exception {}
+

@@ -1,9 +1,11 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_app/Managers/navigation_manager.dart';
 import 'package:flutter_app/Managers/network_manager.dart';
 import 'package:flutter_app/Models/route.dart';
 import 'package:flutter_app/Models/station.dart';
+import 'package:flutter_app/main_menu.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:geolocator/geolocator.dart';
 
@@ -239,7 +241,7 @@ class _MapsPageState extends State {
             ),
             onPressed: () {
               if (_mapData.isRouteEnd) {
-                print("to menu");
+                NavigationManager.push(context, MainMenu());
               }
             },
             child: Text("В меню выбора маршрутов",
@@ -325,8 +327,12 @@ class MapData {
   }
 
   updatePassangers() async {
-    _waitingPassangerCount = await NetworkManager.getWaitingPassangers(0);
-    _readyPassangerCount = await NetworkManager.getReadyPassangers();
+    try {
+      _waitingPassangerCount = await NetworkManager.getWaitingPassangers(0);
+      _readyPassangerCount = await NetworkManager.getReadyPassangers();
+    } on NotReachServerException {
+      print("NOT REACH SERVER!");
+    }
   }
 
   getYourPosition() async {
@@ -358,6 +364,7 @@ class MapData {
   }
 
   bool isCloseDistance() {
+    if (_distance == null) return false;
     if (_distance < 50) return true;
     return false;
   }

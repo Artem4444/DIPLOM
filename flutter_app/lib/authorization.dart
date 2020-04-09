@@ -87,38 +87,52 @@ class AuthorizationState extends State {
   }
 
   _sendUserLogin(User user) async {
+    _setLoadingWidget();
     if (!NetworkManager.isConected)
       _showNoConection();
     else {
-      var response = await NetworkManager.login(user);
-      if (response.statusCode == 200) {
-        await AppRepository.setLocalUser(response.body);
-        _showGreatings();
-      } else
-        _showWarning(response.body);
+      try {
+        var response = await NetworkManager.login(user);
+        if (response.statusCode == 200) {
+          await AppRepository.setLocalUser(response.body);
+          _showGreatings();
+        } else
+          _showWarning(response.body);
+      } on NotReachServerException {
+        _showWarning("Не удается связаться с сервером");
+      }
     }
   }
 
   void _registrateUser(User user) async {
+    _setLoadingWidget();
     if (!NetworkManager.isConected)
       _showNoConection();
     else {
-      var response = await NetworkManager.registration(user);
-      if (response.statusCode == 200) {
-        _showSucces(response.body);
-        authorizationPage = AuthorizationPage.login;
-      } else {
-        _showWarning(response.body);
+      try {
+        var response = await NetworkManager.registration(user);
+        if (response.statusCode == 200) {
+          _showSucces(response.body);
+          authorizationPage = AuthorizationPage.login;
+        } else {
+          _showWarning(response.body);
+        }
+      } on NotReachServerException {
+        _showWarning("Не удается связаться с сервером");
       }
     }
+  }
+
+  void _setLoadingWidget() {
+    setState(() {
+      currentState = NetworkManager.loadWidget();
+    });
   }
 
   @override
   void initState() {
     NetworkManager.startListenConectionState(null);
-    setState(() {
-      currentState = NetworkManager.loadWidget();
-    });
+    _setLoadingWidget();
     _getLocalData();
   }
 
