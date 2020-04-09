@@ -4,11 +4,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_app/Managers/app_repository.dart';
 import 'package:flutter_app/Managers/navigation_manager.dart';
 import 'package:flutter_app/Managers/network_manager.dart';
-import 'package:flutter_app/Managers/prefs_manager.dart';
 import 'package:flutter_app/Models/route.dart';
 import 'package:flutter_app/authorization.dart';
 import 'package:flutter_app/route_menu.dart';
-import 'Models/user.dart';
 import 'authorization.dart';
 
 class MainMenu extends StatefulWidget {
@@ -19,7 +17,6 @@ class MainMenu extends StatefulWidget {
 }
 
 class MainMenuState extends State {
-  User user = User("","","","","");
   List<Widget> routeList = List<Widget>();
   Widget currentState;
 
@@ -33,21 +30,16 @@ class MainMenuState extends State {
     });
   }
 
-  _setUserName() async {
-   // user.firstName = await PrefsManager.getUserName();
-  }
-
   @override
   void initState() {
     setState(() {
       currentState = NetworkManager.loadWidget();
     });
-    _setUserName();
     _getRoutes();
   }
 
   _closeUserProfile() async {
-    await PrefsManager.clearPrefs();
+    await AppRepository.clearLocalUser();
     Navigator.pushReplacement(context,
         MaterialPageRoute(builder: (BuildContext context) => Authorization()));
   }
@@ -76,7 +68,7 @@ class MainMenuState extends State {
         decoration: BoxDecoration(color: Colors.blue[50]),
         padding: EdgeInsets.fromLTRB(5, 10, 5, 10),
         child: Row(children: [
-          Row(children: [Icon(Icons.person), Text(user.firstName)]),
+          Row(children: [Icon(Icons.person), Text(AppRepository.localUser.firstName)]),
           SizedBox(
             width: 130,
           ),

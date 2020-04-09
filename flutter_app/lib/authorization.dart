@@ -1,9 +1,8 @@
 import 'dart:async';
-import 'dart:convert';
 import 'dart:io';
 import 'package:flutter/material.dart';
+import 'package:flutter_app/Managers/app_repository.dart';
 import 'package:flutter_app/Managers/navigation_manager.dart';
-import 'package:flutter_app/Managers/prefs_manager.dart';
 import 'package:flutter_app/Models/user.dart';
 import 'package:flutter_app/main_menu.dart';
 import 'Managers/network_manager.dart';
@@ -22,15 +21,16 @@ class AuthorizationState extends State {
   final _registrationFormKey = GlobalKey<FormState>();
   static Widget currentState;
   User _registrationUser = new User("", "", "", "", "");
-  User _loginUser = new User("", "", "", "", "");
+  User _loginUser;
   AuthorizationPage authorizationPage;
   double _greatingsOpacity = 0;
 
   void _getLocalData() async {
-   // _loginUser.firstName = await PrefsManager.getUserName();
-    if (_loginUser.firstName == null || _loginUser.firstName == "")
+    _loginUser = await AppRepository.getLocalUser();
+    if (_loginUser == null) {
+      _loginUser = new User("", "", "", "", "");
       _showLogin();
-    else
+    } else
       _showGreatings();
   }
 
@@ -92,9 +92,7 @@ class AuthorizationState extends State {
     else {
       var response = await NetworkManager.login(user);
       if (response.statusCode == 200) {
-        Map userMap = jsonDecode(response.body);
-        User user = User.fromJson(userMap);
-        PrefsManager.setUserJson(response.body);
+        await AppRepository.setLocalUser(response.body);
         _showGreatings();
       } else
         _showWarning(response.body);
@@ -200,7 +198,7 @@ class AuthorizationState extends State {
   Widget _greatingsWidget() {
     return Center(
         child: Text(
-      "Добро пожаловать ${_loginUser.firstName}!",
+      "Добро пожаловать ${AppRepository.localUser.firstName}!",
       style: TextStyle(fontSize: 30, color: Colors.white),
       textAlign: TextAlign.center,
     ));
