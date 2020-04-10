@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_app/Managers/navigation_manager.dart';
+import 'package:flutter_app/Managers/network_manager.dart';
 import 'package:flutter_app/Models/route.dart';
 import 'package:flutter_app/map_worker.dart';
 
@@ -39,7 +40,12 @@ class RouteMenuState extends State {
     });
   }
 
-  void _getToTheMap(MapData mapData) {
+  _getToTheMap(MapData mapData) async {
+    try {
+      await NetworkManager.startDriving(_route.id);
+    } on NotReachServerException {
+      print("NOT EXECUTE startJourney METHOD!");
+    }
     NavigationManager.push(context, MapsPage(mapData));
   }
 

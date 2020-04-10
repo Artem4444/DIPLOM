@@ -70,7 +70,45 @@ class NetworkManager {
     }
   }
 
-  static void updateStation(int stationId) async {}
+  static sendDriverData(double lat, double lng) async {
+    try {
+      String adress =
+          "http://10.0.2.2:8080/api/drivers/updatedriverposition?lat=${lat}&lng${lng}";
+      final response = await http.post(adress);
+    } on Exception {
+      throwCustomException();
+    }
+  }
+
+  static startDriving(String routeId) async {
+    try {
+      String adress =
+          "http://10.0.2.2:8080/api/drivers/startdriving?routeid=${routeId}&driverid${AppRepository.localUser.id}";
+      final response = await http.post(adress);
+    } on Exception {
+      throwCustomException();
+    }
+  }
+
+  static endDriving(String routeId) async {
+    try {
+      String adress =
+          "http://10.0.2.2:8080/api/drivers/enddriving?routeid=${routeId}&driverid${AppRepository.localUser.id}";
+      final response = await http.delete(adress);
+    } on Exception {
+      throwCustomException();
+    }
+  }
+
+  static void updateStation(String stationId) async {
+    try {
+      String adress =
+          "http://10.0.2.2:8080/api/stations/updatestation?stationid=${stationId}&driverid${AppRepository.localUser.id}";
+      final response = await http.put(adress);
+    } on Exception {
+      throwCustomException();
+    }
+  }
 
   static void startListenConectionState(Function onConectionLostHandler) {
     onConectionLost = onConectionLostHandler;
@@ -117,4 +155,3 @@ class NetworkManager {
 }
 
 class NotReachServerException implements Exception {}
-

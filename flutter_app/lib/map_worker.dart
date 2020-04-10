@@ -72,9 +72,10 @@ class _MapsPageState extends State {
     });
   }
 
-  void _setSendDataWidget() {
+  void _setCloseDistanseWidget() async {
+    await _mapData.updateStation();
     setState(() {
-      bottomWidget = _sendDataWidget();
+      bottomWidget = _closeDistanseWidget();
     });
   }
 
@@ -102,10 +103,10 @@ class _MapsPageState extends State {
     }
   }
 
-  void _nextStationButtonOnclick() {
+  void _targetStationButtonOnclick() {
     if (!_mapData.isRouteEnd) {
       setState(() {
-        _mapData.setNextStationImediatly();
+        _mapData.settargetStationImediatly();
         _setWayWidget();
       });
     } else {
@@ -124,8 +125,9 @@ class _MapsPageState extends State {
             await _mapData.getYourPosition();
             await _mapData.getDistance();
             await _mapData.updatePassangers();
+            await _mapData.sendData();
             if (_mapData.isCloseDistance()) {
-              _setSendDataWidget();
+              _setCloseDistanseWidget();
               _mapData.toNextStation();
             } else {
               _setWayWidget();
@@ -140,6 +142,17 @@ class _MapsPageState extends State {
         }
       }
     });
+  }
+
+  _toMenuButton() async {
+    if (_mapData.isRouteEnd) {
+      try {
+        await NetworkManager.endDriving(_mapData.routeId);
+      } on NotReachServerException {
+        print("NOT EXECUTE endJourney METHOD!");
+      }
+      NavigationManager.push(context, MainMenu());
+    }
   }
 
   @override
@@ -183,7 +196,7 @@ class _MapsPageState extends State {
             padding: EdgeInsets.fromLTRB(10, 20, 10, 20),
             child: Column(children: [
               _stationDataItemWidget(
-                  "Направляйтесь к остановке: ", _mapData.nextStation.name),
+                  "Направляйтесь к остановке: ", _mapData.targetStation.name),
               SizedBox(height: 20),
               _stationDataItemWidget(
                   "Расстояние: ", _mapData.getDistanceAsString()),
@@ -206,7 +219,7 @@ class _MapsPageState extends State {
                         ),
                         onPressed: () {
                           if (!_mapData.isRouteEnd) {
-                            _nextStationButtonOnclick();
+                            _targetStationButtonOnclick();
                           }
                         },
                         child: Row(children: [
@@ -240,9 +253,7 @@ class _MapsPageState extends State {
               side: BorderSide(width: 1, color: Colors.black),
             ),
             onPressed: () {
-              if (_mapData.isRouteEnd) {
-                NavigationManager.push(context, MainMenu());
-              }
+              _toMenuButton();
             },
             child: Text("В меню выбора маршрутов",
                 style: TextStyle(color: Colors.white)),
@@ -250,7 +261,7 @@ class _MapsPageState extends State {
         ]))));
   }
 
-  Widget _sendDataWidget() {
+  Widget _closeDistanseWidget() {
     return Flexible(
         child: Container(
             child: Center(
@@ -260,7 +271,7 @@ class _MapsPageState extends State {
           Container(
             padding: EdgeInsets.fromLTRB(0, 0, 0, 25),
             child: Text(
-              "Судя по всему вы близко к остановке ${_mapData.nextStation.name}",
+              "Судя по всему вы близко к остановке ${_mapData.targetStation.name}",
               textAlign: TextAlign.center,
               style: TextStyle(fontSize: 35, color: Colors.white),
             ),
@@ -300,29 +311,30 @@ class _MapsPageState extends State {
 }
 
 class MapData {
-  Station nextStation;
-  Position position;
-  int _nextStationIndex;
+  int _targetStationIndex;
   int _waitingPassangerCount;
   int _readyPassangerCount;
   bool isRouteEnd = false;
   double _distance;
+  String routeId;
+  Station targetStation;
+  Position position;
   List<Station> stations;
 
   void toNextStation() {
-    nextStation = _getNextStation();
-    if (nextStation == null) {
+    targetStation = _getNextStation();
+    if (targetStation == null) {
       isRouteEnd = true;
-      nextStation = stations[_nextStationIndex];
+      targetStation = stations[_targetStationIndex];
     }
   }
 
-  void setNextStationImediatly() {
-    nextStation = _getNextStation();
+  void settargetStationImediatly() {
+    targetStation = _getNextStation();
     _distance = null;
-    if (nextStation == null) {
+    if (targetStation == null) {
       isRouteEnd = true;
-      nextStation = stations[_nextStationIndex];
+      targetStation = stations[_targetStationIndex];
     }
   }
 
@@ -331,7 +343,24 @@ class MapData {
       _waitingPassangerCount = await NetworkManager.getWaitingPassangers(0);
       _readyPassangerCount = await NetworkManager.getReadyPassangers();
     } on NotReachServerException {
-      print("NOT REACH SERVER!");
+      print("NOT UPDATE PASSANGERS!");
+    }
+  }
+
+  updateStation() async {
+    try {
+      await NetworkManager.updateStation(targetStation.index);
+    } on NotReachServerException {
+      print("NOT UPDATE PASSANGERS!");
+    }
+  }
+
+  sendData() async {
+    try {
+      await NetworkManager.sendDriverData(
+          position.latitude, position.longitude);
+    } on NotReachServerException {
+      print("NOT SEND DATA!");
     }
   }
 
@@ -341,7 +370,7 @@ class MapData {
   }
 
   getDistance() async {
-    _distance = await _getDistanceBetwen(position, nextStation);
+    _distance = await _getDistanceBetwen(position, targetStation);
   }
 
   Future<double> _getDistanceBetwen(Position position, Station station) async {
@@ -350,9 +379,9 @@ class MapData {
   }
 
   Station _getNextStation() {
-    int index = _nextStationIndex + 1;
+    int index = _targetStationIndex + 1;
     if (_isRightIndex(index)) {
-      _nextStationIndex = index;
+      _targetStationIndex = index;
       return stations[index];
     }
     return null;
@@ -390,9 +419,10 @@ class MapData {
       return _readyPassangerCount.toString();
   }
 
-  MapData(RouteData route, int nextStationIndex) {
-    this._nextStationIndex = nextStationIndex;
+  MapData(RouteData route, int targetStationIndex) {
+    this._targetStationIndex = targetStationIndex;
     stations = route.stations;
-    nextStation = stations[this._nextStationIndex];
+    routeId = route.id;
+    targetStation = stations[this._targetStationIndex];
   }
 }

@@ -72,7 +72,17 @@ class MainMenuState extends State {
         onWillPop: _onBackPressed,
         child: Scaffold(
             backgroundColor: Colors.white,
-            body: SafeArea(child: currentState)));
+            body: SafeArea(
+                child: Container(
+                    decoration: BoxDecoration(
+                        gradient: LinearGradient(
+                            begin: Alignment.topRight,
+                            end: Alignment.bottomLeft,
+                            colors: [
+                          Colors.blue[200],
+                          Colors.blueAccent[400]
+                        ])),
+                    child: currentState))));
   }
 
   Widget _routeList() {
@@ -103,11 +113,6 @@ class MainMenuState extends State {
       ),
       Expanded(
           child: Container(
-              decoration: BoxDecoration(
-                  gradient: LinearGradient(
-                      begin: Alignment.topRight,
-                      end: Alignment.bottomLeft,
-                      colors: [Colors.blue[200], Colors.blueAccent[400]])),
               padding: EdgeInsets.fromLTRB(10, 10, 10, 0),
               child: ListView.builder(
                 itemCount: routeList.length,
@@ -141,7 +146,7 @@ class MainMenuState extends State {
             title: Text(route.routeName),
             onTap: () => {NavigationManager.push(context, RouteMenu(route))}));
   }
-  
+
   RaisedButton _raisedButton(String text, Color color, Function onPresed) {
     return RaisedButton(
       elevation: 3,
@@ -157,7 +162,8 @@ class MainMenuState extends State {
       ),
     );
   }
-    Widget _responseWidget(String warning, Color color) {
+
+  Widget _responseWidget(String warning, Color color) {
     return Center(
         child: Column(mainAxisAlignment: MainAxisAlignment.center, children: [
       Text(
@@ -167,7 +173,7 @@ class MainMenuState extends State {
       ),
       Container(
           padding: EdgeInsets.fromLTRB(0, 20, 0, 0),
-          child: _raisedButton("Повторить", color, _getRoutes()))
+          child: _raisedButton("Повторить", color, _getRoutes))
     ]));
   }
 }

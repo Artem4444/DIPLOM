@@ -1,13 +1,13 @@
 ﻿<Properties StartupConfiguration="{A83C47C5-6888-4633-A326-421E4180EFB9}|">
   <MonoDevelop.Ide.ItemProperties.Diplom__TestServer PreferredExecutionTarget="/Applications/Google Chrome.app" />
-  <MonoDevelop.Ide.Workbench ActiveDocument="Diplom_TestServer/Controllers/DriversController.cs">
+  <MonoDevelop.Ide.Workbench ActiveDocument="Diplom_TestServer/Controllers/StationsController.cs">
     <Files>
       <File FileName="Diplom_TestServer/App_Start/WebApiConfig.cs" Line="53" Column="17" />
       <File FileName="Diplom_TestServer/Global.asax" />
       <File FileName="Diplom_TestServer/Data/Data.cs" />
       <File FileName="Diplom_TestServer/Controllers/RoutesController.cs" />
-      <File FileName="Diplom_TestServer/Controllers/DriversController.cs" Line="42" Column="35" />
-      <File FileName="Diplom_TestServer/Controllers/StationsController.cs" />
+      <File FileName="Diplom_TestServer/Controllers/DriversController.cs" />
+      <File FileName="Diplom_TestServer/Controllers/StationsController.cs" Line="1" Column="1" />
       <File FileName="Diplom_TestServer/Model/User.cs" />
     </Files>
     <Pads>
@@ -17,7 +17,7 @@
             <Node name="Diplom_TestServer" expanded="True">
               <Node name="App_Start" expanded="True" />
               <Node name="Controllers" expanded="True">
-                <Node name="DriversController.cs" selected="True" />
+                <Node name="StationsController.cs" selected="True" />
               </Node>
               <Node name="Data" expanded="True" />
               <Node name="Model" expanded="True" />
