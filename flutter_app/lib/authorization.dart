@@ -6,6 +6,8 @@ import 'package:flutter_app/Managers/navigation_manager.dart';
 import 'package:flutter_app/Models/user.dart';
 import 'package:flutter_app/main_menu.dart';
 import 'Managers/network_manager.dart';
+import 'Templates/alerts.dart';
+import 'Templates/buttons.dart';
 
 class Authorization extends StatefulWidget {
   @override
@@ -51,19 +53,21 @@ class AuthorizationState extends State {
 
   void _showNoConection() {
     setState(() {
-      currentState = _noInternetWidget();
+      currentState = Alerts.noInternetWidget(_setPreviousWidget);
     });
   }
 
   void _showWarning(String warning) {
     setState(() {
-      currentState = _responseWidget(warning, Colors.red[400]);
+      currentState =
+          Alerts.responseWidget(warning, Colors.red[400], _setPreviousWidget);
     });
   }
 
   void _showSucces(String succesMesage) {
     setState(() {
-      currentState = _responseWidget(succesMesage, Colors.green[400]);
+      currentState = Alerts.responseWidget(
+          succesMesage, Colors.green[400], _setPreviousWidget);
     });
   }
 
@@ -180,35 +184,6 @@ class AuthorizationState extends State {
                             child: currentState))))));
   }
 
-  Widget _noInternetWidget() {
-    return Center(
-        child: Column(mainAxisAlignment: MainAxisAlignment.center, children: [
-      Text(
-        "Не удается отправить данные. Проверьте подключение к интернету",
-        style: TextStyle(fontSize: 30, color: Colors.white),
-        textAlign: TextAlign.center,
-      ),
-      Container(
-          padding: EdgeInsets.fromLTRB(0, 20, 0, 0),
-          child:
-              _raisedButton("Продолжить", Colors.red[400], _setPreviousWidget))
-    ]));
-  }
-
-  Widget _responseWidget(String warning, Color color) {
-    return Center(
-        child: Column(mainAxisAlignment: MainAxisAlignment.center, children: [
-      Text(
-        warning,
-        style: TextStyle(fontSize: 30, color: Colors.white),
-        textAlign: TextAlign.center,
-      ),
-      Container(
-          padding: EdgeInsets.fromLTRB(0, 20, 0, 0),
-          child: _raisedButton("Продолжить", color, _setPreviousWidget))
-    ]));
-  }
-
   Widget _greatingsWidget() {
     return Center(
         child: Text(
@@ -233,6 +208,7 @@ class AuthorizationState extends State {
               padding: EdgeInsets.fromLTRB(20, 0, 20, 20),
               child: Column(children: [
                 TextFormField(
+                  initialValue: _registrationUser.firstName,
                   decoration: _inputDecoration("Имя", Icons.person),
                   validator: (value) {
                     if (value.isEmpty)
@@ -249,6 +225,7 @@ class AuthorizationState extends State {
                   height: 15,
                 ),
                 TextFormField(
+                  initialValue: _registrationUser.secondName,
                   decoration: _inputDecoration("Фамилия", Icons.person),
                   validator: (value) {
                     if (value.isEmpty)
@@ -265,6 +242,7 @@ class AuthorizationState extends State {
                   height: 15,
                 ),
                 TextFormField(
+                  initialValue: _registrationUser.mobileNumber,
                   decoration: _inputDecoration(
                       "Номер мобильного телефона", Icons.device_unknown),
                   validator: (value) {
@@ -319,14 +297,15 @@ class AuthorizationState extends State {
           child: Row(mainAxisAlignment: MainAxisAlignment.center, children: [
         Container(
             padding: EdgeInsets.fromLTRB(5, 0, 5, 0),
-            child: _raisedButton('Зарегистрироваться', Colors.green[300], () {
+            child: Buttons.raisedButton('Зарегистрироваться', Colors.green[300],
+                () {
               if (_registrationFormKey.currentState.validate()) {
                 _registrateUser(_registrationUser);
               }
             })),
         Container(
             padding: EdgeInsets.fromLTRB(5, 0, 5, 0),
-            child: _raisedButton('Вход', Colors.blue[300], () {
+            child: Buttons.raisedButton('Вход', Colors.blue[300], () {
               _showLogin();
             }))
       ]))
@@ -346,6 +325,7 @@ class AuthorizationState extends State {
               padding: EdgeInsets.fromLTRB(20, 0, 20, 20),
               child: Column(children: [
                 TextFormField(
+                  initialValue: _loginUser.mobileNumber,
                   decoration: _inputDecoration(
                       "Номер мобильного телефона", Icons.device_unknown),
                   validator: (value) {
@@ -363,6 +343,7 @@ class AuthorizationState extends State {
                   height: 15,
                 ),
                 TextFormField(
+                  initialValue: _loginUser.password,
                   obscureText: true,
                   decoration:
                       _inputDecoration("Пароль", Icons.screen_lock_portrait),
@@ -377,7 +358,7 @@ class AuthorizationState extends State {
                 ),
               ]))),
       Row(mainAxisAlignment: MainAxisAlignment.center, children: [
-        _raisedButton('Вход', Colors.blue[300], () {
+        Buttons.raisedButton('Вход', Colors.blue[300], () {
           if (_loginFormKey.currentState.validate()) {
             _sendUserLogin(_loginUser);
           }
@@ -385,7 +366,7 @@ class AuthorizationState extends State {
         SizedBox(
           width: 20,
         ),
-        _raisedButton('Регистрация', Colors.green[300], () {
+        Buttons.raisedButton('Регистрация', Colors.green[300], () {
           _showRegistration();
         })
       ])
@@ -403,21 +384,5 @@ class AuthorizationState extends State {
           icon,
           color: Colors.white,
         ));
-  }
-
-  RaisedButton _raisedButton(String text, Color color, Function onPresed) {
-    return RaisedButton(
-      elevation: 3,
-      color: color,
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(20),
-        side: BorderSide(width: 1, color: Colors.white),
-      ),
-      onPressed: onPresed,
-      child: Text(
-        text,
-        style: TextStyle(color: Colors.white),
-      ),
-    );
   }
 }

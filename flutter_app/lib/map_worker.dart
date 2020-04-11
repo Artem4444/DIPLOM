@@ -5,6 +5,7 @@ import 'package:flutter_app/Managers/navigation_manager.dart';
 import 'package:flutter_app/Managers/network_manager.dart';
 import 'package:flutter_app/Models/route.dart';
 import 'package:flutter_app/Models/station.dart';
+import 'package:flutter_app/Templates/alerts.dart';
 import 'package:flutter_app/main_menu.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:geolocator/geolocator.dart';
@@ -81,7 +82,7 @@ class _MapsPageState extends State {
 
   void _setNoInternetWidget() {
     setState(() {
-      bottomWidget = _noInternetWidget();
+      bottomWidget = Alerts.noInternetWidgetWithoutButton();
     });
   }
 
@@ -212,7 +213,7 @@ class _MapsPageState extends State {
                   child: SizedBox(
                       width: 215,
                       child: RaisedButton(
-                        color: Colors.yellow,
+                        color: Colors.orange[300],
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(20),
                           side: BorderSide(width: 1, color: Colors.black),
@@ -278,21 +279,6 @@ class _MapsPageState extends State {
           ),
           Text(
             "Отправка данных...",
-            textAlign: TextAlign.center,
-            style: TextStyle(fontSize: 25, color: Colors.white),
-          ),
-        ]))));
-  }
-
-  Widget _noInternetWidget() {
-    return Flexible(
-        child: Container(
-            child: Center(
-                child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-          Text(
-            "Не удается обновить данные. Проверьте подключение к интернету",
             textAlign: TextAlign.center,
             style: TextStyle(fontSize: 25, color: Colors.white),
           ),

@@ -7,6 +7,7 @@ import 'package:flutter_app/Managers/network_manager.dart';
 import 'package:flutter_app/Models/route.dart';
 import 'package:flutter_app/authorization.dart';
 import 'package:flutter_app/route_menu.dart';
+import 'Templates/alerts.dart';
 import 'authorization.dart';
 
 class MainMenu extends StatefulWidget {
@@ -37,7 +38,8 @@ class MainMenuState extends State {
 
   void _showWarning(String warning) {
     setState(() {
-      currentState = _responseWidget(warning, Colors.red[400]);
+      currentState =
+          Alerts.responseWidget(warning, Colors.red[400], _getRoutes);
     });
   }
 
@@ -145,35 +147,5 @@ class MainMenuState extends State {
                     textAlign: TextAlign.center)),
             title: Text(route.routeName),
             onTap: () => {NavigationManager.push(context, RouteMenu(route))}));
-  }
-
-  RaisedButton _raisedButton(String text, Color color, Function onPresed) {
-    return RaisedButton(
-      elevation: 3,
-      color: color,
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(20),
-        side: BorderSide(width: 1, color: Colors.white),
-      ),
-      onPressed: onPresed,
-      child: Text(
-        text,
-        style: TextStyle(color: Colors.white),
-      ),
-    );
-  }
-
-  Widget _responseWidget(String warning, Color color) {
-    return Center(
-        child: Column(mainAxisAlignment: MainAxisAlignment.center, children: [
-      Text(
-        warning,
-        style: TextStyle(fontSize: 30, color: Colors.white),
-        textAlign: TextAlign.center,
-      ),
-      Container(
-          padding: EdgeInsets.fromLTRB(0, 20, 0, 0),
-          child: _raisedButton("Повторить", color, _getRoutes))
-    ]));
   }
 }
