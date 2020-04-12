@@ -38,8 +38,8 @@ class MainMenuState extends State {
 
   void _showWarning(String warning) {
     setState(() {
-      currentState =
-          Alerts.responseWidget(warning, Colors.red[400], _getRoutes);
+      currentState = Alerts.responseWidget(
+          warning, Colors.red[400], "Повторить", _getRoutes);
     });
   }
 

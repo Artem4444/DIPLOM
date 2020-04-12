@@ -59,15 +59,15 @@ class AuthorizationState extends State {
 
   void _showWarning(String warning) {
     setState(() {
-      currentState =
-          Alerts.responseWidget(warning, Colors.red[400], _setPreviousWidget);
+      currentState = Alerts.responseWidget(
+          warning, Colors.red[400], "Повторить", _setPreviousWidget);
     });
   }
 
   void _showSucces(String succesMesage) {
     setState(() {
       currentState = Alerts.responseWidget(
-          succesMesage, Colors.green[400], _setPreviousWidget);
+          succesMesage, Colors.green[400], "Продолжить", _setPreviousWidget);
     });
   }
 
@@ -180,197 +180,203 @@ class AuthorizationState extends State {
                               Colors.blueAccent[400]
                             ])),
                         child: AnimatedSwitcher(
-                            duration: Duration(seconds: 1),
+                            duration: Duration(milliseconds: 250),
                             child: currentState))))));
   }
 
   Widget _greatingsWidget() {
     return Center(
+        key: ValueKey<String>("Greatings"),
         child: Text(
-      "Добро пожаловать ${AppRepository.localUser.firstName}!",
-      style: TextStyle(fontSize: 30, color: Colors.white),
-      textAlign: TextAlign.center,
-    ));
+          "Добро пожаловать ${AppRepository.localUser.firstName}!",
+          style: TextStyle(fontSize: 30, color: Colors.white),
+          textAlign: TextAlign.center,
+        ));
   }
 
   Widget _registrationWidget() {
     return Center(
+        key: ValueKey<String>("Registration"),
         child: SingleChildScrollView(
             child:
                 Column(mainAxisAlignment: MainAxisAlignment.center, children: [
-      Container(
-          padding: EdgeInsets.fromLTRB(0, 0, 0, 20),
-          child: Text("Регистрация",
-              style: TextStyle(fontSize: 30, color: Colors.white))),
-      Form(
-          key: _registrationFormKey,
-          child: Container(
-              padding: EdgeInsets.fromLTRB(20, 0, 20, 20),
-              child: Column(children: [
-                TextFormField(
-                  initialValue: _registrationUser.firstName,
-                  decoration: _inputDecoration("Имя", Icons.person),
-                  validator: (value) {
-                    if (value.isEmpty)
-                      return 'Введите имя!';
-                    else if (!value.contains(new RegExp("[а-яА-Я]")))
-                      return "Только кирилличиские символы!";
-                    else {
-                      _registrationUser.firstName = value;
-                      return null;
-                    }
-                  },
-                ),
-                SizedBox(
-                  height: 15,
-                ),
-                TextFormField(
-                  initialValue: _registrationUser.secondName,
-                  decoration: _inputDecoration("Фамилия", Icons.person),
-                  validator: (value) {
-                    if (value.isEmpty)
-                      return 'Введите фамилию!';
-                    else if (!value.contains(new RegExp("[а-яА-Я]")))
-                      return "Только кирилличиские символы!";
-                    else {
-                      _registrationUser.secondName = value;
-                      return null;
-                    }
-                  },
-                ),
-                SizedBox(
-                  height: 15,
-                ),
-                TextFormField(
-                  initialValue: _registrationUser.mobileNumber,
-                  decoration: _inputDecoration(
-                      "Номер мобильного телефона", Icons.device_unknown),
-                  validator: (value) {
-                    if (value.isEmpty)
-                      return 'Введите полный номер!';
-                    else if (!value.contains(new RegExp(r"^\+375[0-9]{9}$")))
-                      return "Не корректный номер! Пример:+375295264295";
-                    else {
-                      _registrationUser.mobileNumber = value;
-                      return null;
-                    }
-                  },
-                ),
-                SizedBox(
-                  height: 15,
-                ),
-                TextFormField(
-                  obscureText: true,
-                  decoration:
-                      _inputDecoration("Пароль", Icons.screen_lock_portrait),
-                  validator: (value) {
-                    if (value.isEmpty)
-                      return 'Введите пароль!';
-                    else if (value.length < 4)
-                      return "Не менее 4 символов!";
-                    else {
-                      _registrationUser.password = value;
-                      return null;
-                    }
-                  },
-                ),
-                SizedBox(
-                  height: 15,
-                ),
-                TextFormField(
-                  obscureText: true,
-                  decoration: _inputDecoration(
-                      "Подтвердите пароль", Icons.screen_lock_portrait),
-                  validator: (value) {
-                    if (_registrationUser.password != value)
-                      return 'Введенные пароли не совпадают!';
-                    else if (value.isEmpty)
-                      return 'Подтвердите пароль!';
-                    else {
-                      _registrationUser.mobileNumber = value;
-                      return null;
-                    }
-                  },
-                )
-              ]))),
-      Center(
-          child: Row(mainAxisAlignment: MainAxisAlignment.center, children: [
-        Container(
-            padding: EdgeInsets.fromLTRB(5, 0, 5, 0),
-            child: Buttons.raisedButton('Зарегистрироваться', Colors.green[300],
-                () {
-              if (_registrationFormKey.currentState.validate()) {
-                _registrateUser(_registrationUser);
-              }
-            })),
-        Container(
-            padding: EdgeInsets.fromLTRB(5, 0, 5, 0),
-            child: Buttons.raisedButton('Вход', Colors.blue[300], () {
-              _showLogin();
-            }))
-      ]))
-    ])));
+          Container(
+              padding: EdgeInsets.fromLTRB(0, 0, 0, 20),
+              child: Text("Регистрация",
+                  style: TextStyle(fontSize: 30, color: Colors.white))),
+          Form(
+              key: _registrationFormKey,
+              child: Container(
+                  padding: EdgeInsets.fromLTRB(20, 0, 20, 20),
+                  child: Column(children: [
+                    TextFormField(
+                      initialValue: _registrationUser.firstName,
+                      decoration: _inputDecoration("Имя", Icons.person),
+                      validator: (value) {
+                        if (value.isEmpty)
+                          return 'Введите имя!';
+                        else if (!value.contains(new RegExp("[а-яА-Я]")))
+                          return "Только кирилличиские символы!";
+                        else {
+                          _registrationUser.firstName = value;
+                          return null;
+                        }
+                      },
+                    ),
+                    SizedBox(
+                      height: 15,
+                    ),
+                    TextFormField(
+                      initialValue: _registrationUser.secondName,
+                      decoration: _inputDecoration("Фамилия", Icons.person),
+                      validator: (value) {
+                        if (value.isEmpty)
+                          return 'Введите фамилию!';
+                        else if (!value.contains(new RegExp("[а-яА-Я]")))
+                          return "Только кирилличиские символы!";
+                        else {
+                          _registrationUser.secondName = value;
+                          return null;
+                        }
+                      },
+                    ),
+                    SizedBox(
+                      height: 15,
+                    ),
+                    TextFormField(
+                      initialValue: _registrationUser.mobileNumber,
+                      decoration: _inputDecoration(
+                          "Номер мобильного телефона", Icons.device_unknown),
+                      validator: (value) {
+                        if (value.isEmpty)
+                          return 'Введите полный номер!';
+                        else if (!value
+                            .contains(new RegExp(r"^\+375[0-9]{9}$")))
+                          return "Не корректный номер! Пример:+375295264295";
+                        else {
+                          _registrationUser.mobileNumber = value;
+                          return null;
+                        }
+                      },
+                    ),
+                    SizedBox(
+                      height: 15,
+                    ),
+                    TextFormField(
+                      obscureText: true,
+                      decoration: _inputDecoration(
+                          "Пароль", Icons.screen_lock_portrait),
+                      validator: (value) {
+                        if (value.isEmpty)
+                          return 'Введите пароль!';
+                        else if (value.length < 4)
+                          return "Не менее 4 символов!";
+                        else {
+                          _registrationUser.password = value;
+                          return null;
+                        }
+                      },
+                    ),
+                    SizedBox(
+                      height: 15,
+                    ),
+                    TextFormField(
+                      obscureText: true,
+                      decoration: _inputDecoration(
+                          "Подтвердите пароль", Icons.screen_lock_portrait),
+                      validator: (value) {
+                        if (_registrationUser.password != value)
+                          return 'Введенные пароли не совпадают!';
+                        else if (value.isEmpty)
+                          return 'Подтвердите пароль!';
+                        else {
+                          _registrationUser.mobileNumber = value;
+                          return null;
+                        }
+                      },
+                    )
+                  ]))),
+          Center(
+              child:
+                  Row(mainAxisAlignment: MainAxisAlignment.center, children: [
+            Container(
+                padding: EdgeInsets.fromLTRB(5, 0, 5, 0),
+                child: Buttons.raisedButton(
+                    'Зарегистрироваться', Colors.green[300], () {
+                  if (_registrationFormKey.currentState.validate()) {
+                    _registrateUser(_registrationUser);
+                  }
+                })),
+            Container(
+                padding: EdgeInsets.fromLTRB(5, 0, 5, 0),
+                child: Buttons.raisedButton('Вход', Colors.blue[300], () {
+                  _showLogin();
+                }))
+          ]))
+        ])));
   }
 
   Widget _loginWidget() {
     return Center(
+        key: ValueKey<String>("Login"),
         child: Column(mainAxisAlignment: MainAxisAlignment.center, children: [
-      Container(
-          padding: EdgeInsets.fromLTRB(0, 0, 0, 20),
-          child: Text("Вход",
-              style: TextStyle(fontSize: 30, color: Colors.white))),
-      Form(
-          key: _loginFormKey,
-          child: Container(
-              padding: EdgeInsets.fromLTRB(20, 0, 20, 20),
-              child: Column(children: [
-                TextFormField(
-                  initialValue: _loginUser.mobileNumber,
-                  decoration: _inputDecoration(
-                      "Номер мобильного телефона", Icons.device_unknown),
-                  validator: (value) {
-                    if (value.isEmpty)
-                      return 'Введите полный номер!';
-                    else if (!value.contains(new RegExp(r"^\+375[0-9]{9}$")))
-                      return "Не корректный номер! Пример:+375295264295";
-                    else {
-                      _loginUser.mobileNumber = value;
-                      return null;
-                    }
-                  },
-                ),
-                SizedBox(
-                  height: 15,
-                ),
-                TextFormField(
-                  initialValue: _loginUser.password,
-                  obscureText: true,
-                  decoration:
-                      _inputDecoration("Пароль", Icons.screen_lock_portrait),
-                  validator: (value) {
-                    if (value.isEmpty) {
-                      return 'Введите пароль!';
-                    } else {
-                      _loginUser.password = value;
-                      return null;
-                    }
-                  },
-                ),
-              ]))),
-      Row(mainAxisAlignment: MainAxisAlignment.center, children: [
-        Buttons.raisedButton('Вход', Colors.blue[300], () {
-          if (_loginFormKey.currentState.validate()) {
-            _sendUserLogin(_loginUser);
-          }
-        }),
-        SizedBox(
-          width: 20,
-        ),
-        Buttons.raisedButton('Регистрация', Colors.green[300], () {
-          _showRegistration();
-        })
-      ])
-    ]));
+          Container(
+              padding: EdgeInsets.fromLTRB(0, 0, 0, 20),
+              child: Text("Вход",
+                  style: TextStyle(fontSize: 30, color: Colors.white))),
+          Form(
+              key: _loginFormKey,
+              child: Container(
+                  padding: EdgeInsets.fromLTRB(20, 0, 20, 20),
+                  child: Column(children: [
+                    TextFormField(
+                      initialValue: _loginUser.mobileNumber,
+                      decoration: _inputDecoration(
+                          "Номер мобильного телефона", Icons.device_unknown),
+                      validator: (value) {
+                        if (value.isEmpty)
+                          return 'Введите полный номер!';
+                        else if (!value
+                            .contains(new RegExp(r"^\+375[0-9]{9}$")))
+                          return "Не корректный номер! Пример:+375295264295";
+                        else {
+                          _loginUser.mobileNumber = value;
+                          return null;
+                        }
+                      },
+                    ),
+                    SizedBox(
+                      height: 15,
+                    ),
+                    TextFormField(
+                      initialValue: _loginUser.password,
+                      obscureText: true,
+                      decoration: _inputDecoration(
+                          "Пароль", Icons.screen_lock_portrait),
+                      validator: (value) {
+                        if (value.isEmpty) {
+                          return 'Введите пароль!';
+                        } else {
+                          _loginUser.password = value;
+                          return null;
+                        }
+                      },
+                    ),
+                  ]))),
+          Row(mainAxisAlignment: MainAxisAlignment.center, children: [
+            Buttons.raisedButton('Вход', Colors.blue[300], () {
+              if (_loginFormKey.currentState.validate()) {
+                _sendUserLogin(_loginUser);
+              }
+            }),
+            SizedBox(
+              width: 20,
+            ),
+            Buttons.raisedButton('Регистрация', Colors.green[300], () {
+              _showRegistration();
+            })
+          ])
+        ]));
   }
 
   InputDecoration _inputDecoration(String text, IconData icon) {

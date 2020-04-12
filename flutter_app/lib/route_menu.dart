@@ -17,7 +17,7 @@ class RouteMenu extends StatefulWidget {
   }
 }
 
-class RouteMenuState extends State {
+class RouteMenuState extends State with SingleTickerProviderStateMixin {
   final RouteData _route;
   static Widget _stationsWidget;
   static Widget _confirmWidget;
@@ -60,7 +60,7 @@ class RouteMenuState extends State {
                   colors: [Colors.blue[200], Colors.blueAccent[400]])),
           child: Center(
             child: AnimatedSwitcher(
-                duration: Duration(seconds: 1),
+                duration: Duration(milliseconds: 250),
                 child: _widgetOptions.elementAt(_selectedIndex)),
           )),
       floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
@@ -92,87 +92,90 @@ class RouteMenuState extends State {
 
   Widget _confirm(int index) {
     return SafeArea(
+        key: ValueKey<String>("RouteConfirm"),
         child: Column(children: [
-      Container(
-          padding: EdgeInsets.fromLTRB(0, 20, 0, 0),
-          child: Center(
-              child: Text(
-            "Проверьте правильность данных",
-            style: TextStyle(fontSize: 20, color: Colors.white),
-          ))),
-      Container(
-          padding: EdgeInsets.fromLTRB(0, 20, 0, 0),
-          child: Center(
-              child: Column(children: [
-            Text(
-                "Вы направляетесь в сторону конечной: ${_route.stations[_route.stations.length - 1].name}",
-                style: TextStyle(fontSize: 25, color: Colors.white),
-                textAlign: TextAlign.center),
-            SizedBox(
-              height: 30,
-            ),
-            Text("Ваша следующая остановка: ${_route.stations[index].name}",
-                style: TextStyle(fontSize: 25, color: Colors.white),
-                textAlign: TextAlign.center),
-          ]))),
-      Expanded(
-          child: Container(
-              padding: EdgeInsets.fromLTRB(0, 0, 0, 80),
+          Container(
+              padding: EdgeInsets.fromLTRB(0, 20, 0, 0),
               child: Center(
-                  child: RaisedButton(
-                      onPressed: () {
-                        setState(() {
-                          _getToTheMap(MapData(_route, index));
-                        });
-                      },
-                      shape: RoundedRectangleBorder(
-                          side: BorderSide(width: 1, color: Colors.white),
-                          borderRadius: BorderRadius.circular(20)),
-                      color: Colors.green[500],
-                      child: Container(
-                          alignment: Alignment.center,
-                          width: 200,
-                          height: 65,
-                          child: Text(
-                            "В путь!",
-                            style: TextStyle(fontSize: 40, color: Colors.white),
-                          ))))))
-    ]));
+                  child: Text(
+                "Проверьте правильность данных",
+                style: TextStyle(fontSize: 20, color: Colors.white),
+              ))),
+          Container(
+              padding: EdgeInsets.fromLTRB(0, 20, 0, 0),
+              child: Center(
+                  child: Column(children: [
+                Text(
+                    "Вы направляетесь в сторону конечной: ${_route.stations[_route.stations.length - 1].name}",
+                    style: TextStyle(fontSize: 25, color: Colors.white),
+                    textAlign: TextAlign.center),
+                SizedBox(
+                  height: 30,
+                ),
+                Text("Ваша следующая остановка: ${_route.stations[index].name}",
+                    style: TextStyle(fontSize: 25, color: Colors.white),
+                    textAlign: TextAlign.center),
+              ]))),
+          Expanded(
+              child: Container(
+                  padding: EdgeInsets.fromLTRB(0, 0, 0, 80),
+                  child: Center(
+                      child: RaisedButton(
+                          onPressed: () {
+                            setState(() {
+                              _getToTheMap(MapData(_route, index));
+                            });
+                          },
+                          shape: RoundedRectangleBorder(
+                              side: BorderSide(width: 1, color: Colors.white),
+                              borderRadius: BorderRadius.circular(20)),
+                          color: Colors.green[500],
+                          child: Container(
+                              alignment: Alignment.center,
+                              width: 200,
+                              height: 65,
+                              child: Text(
+                                "В путь!",
+                                style: TextStyle(
+                                    fontSize: 40, color: Colors.white),
+                              ))))))
+        ]));
   }
 
   Widget _stationsList(List<Station> stations) {
     return SafeArea(
+        key: ValueKey<String>("RouteStationList"),
         child: Column(children: [
-      Container(
-          padding: EdgeInsets.fromLTRB(0, 20, 0, 10),
-          child: Center(
-              child: Text(
-            "Выберите остановку, к которой вы прямо сейчас поедете",
-            style: TextStyle(fontSize: 20, color: Colors.white),
-            textAlign: TextAlign.center,
-          ))),
-      Flexible(
-          child: ListView.builder(
-        padding: EdgeInsets.fromLTRB(10, 0, 10, 0),
-        itemCount: stations.length,
-        itemBuilder: (context, index) {
-          return Card(
-              margin: EdgeInsets.fromLTRB(0, 10, 0, 10),
-              shape: RoundedRectangleBorder(
-                  side: BorderSide(width: 1, color: Colors.black),
-                  borderRadius: BorderRadius.circular(20)),
-              child: ListTile(
-                title: Text(stations[index].name,
-                    style: TextStyle(color: Colors.black)),
-                onTap: () => {
-                  setState(() {
-                    _widgetOptions[1] = _confirm(index);
-                  }),
-                  _onItemTapped(1)
-                },
-              ));
-        },
-      ))
-    ]));
+          Container(
+              padding: EdgeInsets.fromLTRB(0, 20, 0, 10),
+              child: Center(
+                  child: Text(
+                "Выберите остановку, к которой вы прямо сейчас поедете",
+                style: TextStyle(fontSize: 20, color: Colors.white),
+                textAlign: TextAlign.center,
+              ))),
+          Flexible(
+              child: ListView.builder(
+            padding: EdgeInsets.fromLTRB(10, 0, 10, 0),
+            itemCount: stations.length,
+            itemBuilder: (context, index) {
+              return Card(
+                  margin: EdgeInsets.fromLTRB(0, 10, 0, 10),
+                  shape: RoundedRectangleBorder(
+                      side: BorderSide(width: 1, color: Colors.black),
+                      borderRadius: BorderRadius.circular(20)),
+                  child: ListTile(
+                    title: Text(stations[index].name,
+                        style: TextStyle(color: Colors.black)),
+                    onTap: () => {
+                      setState(() {
+                        _widgetOptions[1] = _confirm(index);
+                      }),
+                      _onItemTapped(1)
+                    },
+                  ));
+            },
+          ))
+        ]));
   }
 }

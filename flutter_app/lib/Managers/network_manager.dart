@@ -146,6 +146,7 @@ class NetworkManager {
 
   static Widget loadWidget() {
     return Center(
+      key: ValueKey<String>("Loading"),
         child: SizedBox(
       width: 60,
       height: 60,

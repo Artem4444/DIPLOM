@@ -73,11 +73,11 @@ class _MapsPageState extends State {
     });
   }
 
-  void _setCloseDistanseWidget() async {
-    await _mapData.updateStation();
+  void _setCloseDistanseWidget(String stationName) async {
     setState(() {
-      bottomWidget = _closeDistanseWidget();
+      bottomWidget = _closeDistanseWidget(stationName);
     });
+    await _mapData.updateStationOnServer();
   }
 
   void _setNoInternetWidget() {
@@ -128,7 +128,7 @@ class _MapsPageState extends State {
             await _mapData.updatePassangers();
             await _mapData.sendData();
             if (_mapData.isCloseDistance()) {
-              _setCloseDistanseWidget();
+              _setCloseDistanseWidget(_mapData.targetStation.name);
               _mapData.toNextStation();
             } else {
               _setWayWidget();
@@ -183,7 +183,11 @@ class _MapsPageState extends State {
                           _controller = controller;
                         },
                       ))),
-              bottomWidget
+              Container(
+                  height: 270,
+                  child: AnimatedSwitcher(
+                      duration: Duration(milliseconds: 200),
+                      child: bottomWidget))
             ])));
   }
 
@@ -193,6 +197,7 @@ class _MapsPageState extends State {
 
   Widget _wayWidget() {
     return Flexible(
+        key: ValueKey<String>("Way"),
         child: Container(
             padding: EdgeInsets.fromLTRB(10, 20, 10, 20),
             child: Column(children: [
@@ -234,12 +239,11 @@ class _MapsPageState extends State {
   }
 
   Widget _endWayWidget() {
-    return Flexible(
-        child: Container(
-            child: Center(
-                child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
+    return Container(
+        key: ValueKey<String>("EndWayWidget"),
+        child: Center(
+            child:
+                Column(mainAxisAlignment: MainAxisAlignment.center, children: [
           Container(
               padding: EdgeInsets.fromLTRB(0, 0, 0, 30),
               child: Text(
@@ -259,30 +263,31 @@ class _MapsPageState extends State {
             child: Text("В меню выбора маршрутов",
                 style: TextStyle(color: Colors.white)),
           )
-        ]))));
+        ])));
   }
 
-  Widget _closeDistanseWidget() {
-    return Flexible(
+  Widget _closeDistanseWidget(String stationName) {
+    return Container(
+        key: ValueKey<String>("CloseDistance"),
         child: Container(
             child: Center(
                 child: Column(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-          Container(
-            padding: EdgeInsets.fromLTRB(0, 0, 0, 25),
-            child: Text(
-              "Судя по всему вы близко к остановке ${_mapData.targetStation.name}",
-              textAlign: TextAlign.center,
-              style: TextStyle(fontSize: 35, color: Colors.white),
-            ),
-          ),
-          Text(
-            "Отправка данных...",
-            textAlign: TextAlign.center,
-            style: TextStyle(fontSize: 25, color: Colors.white),
-          ),
-        ]))));
+              Container(
+                padding: EdgeInsets.fromLTRB(0, 0, 0, 25),
+                child: Text(
+                  "Судя по всему вы близко к остановке $stationName",
+                  textAlign: TextAlign.center,
+                  style: TextStyle(fontSize: 35, color: Colors.white),
+                ),
+              ),
+              Text(
+                "Отправка данных...",
+                textAlign: TextAlign.center,
+                style: TextStyle(fontSize: 25, color: Colors.white),
+              ),
+            ]))));
   }
 
   Widget _stationDataItemWidget(String leftSide, String rightSide) {
@@ -333,7 +338,7 @@ class MapData {
     }
   }
 
-  updateStation() async {
+  updateStationOnServer() async {
     try {
       await NetworkManager.updateStation(targetStation.index);
     } on NotReachServerException {
