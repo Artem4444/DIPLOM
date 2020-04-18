@@ -73,8 +73,8 @@ class NetworkManager {
   static sendDriverData(double lat, double lng) async {
     try {
       String adress =
-          "http://10.0.2.2:8080/api/drivers/updatedriverposition?lat=${lat}&lng${lng}";
-      final response = await http.post(adress);
+          "http://10.0.2.2:8080/api/drivers/updatedriverposition?lat=${lat}&lng=${lng}";
+      final response = await http.put(adress);
     } on Exception {
       throwCustomException();
     }
@@ -94,7 +94,7 @@ class NetworkManager {
     try {
       String adress =
           "http://10.0.2.2:8080/api/drivers/enddriving?routeid=${routeId}&driverid${AppRepository.localUser.id}";
-      final response = await http.delete(adress);
+      final response = await http.post(adress);
     } on Exception {
       throwCustomException();
     }

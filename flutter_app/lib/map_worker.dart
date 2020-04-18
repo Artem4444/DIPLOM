@@ -320,7 +320,8 @@ class MapData {
     }
   }
 
-  void settargetStationImediatly() {
+  void settargetStationImediatly() async{
+    await updateStationOnServer();
     targetStation = _getNextStation();
     _distance = null;
     if (targetStation == null) {
