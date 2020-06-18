@@ -68,6 +68,7 @@
     <Compile Include="Controllers\DriversController.cs" />
     <Compile Include="Model\User.cs" />
     <Compile Include="Controllers\StationsController.cs" />
+    <Compile Include="Controllers\TestController.cs" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Controllers\" />

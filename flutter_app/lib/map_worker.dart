@@ -277,7 +277,7 @@ class _MapsPageState extends State {
               Container(
                 padding: EdgeInsets.fromLTRB(0, 0, 0, 25),
                 child: Text(
-                  "Судя по всему вы близко к остановке $stationName",
+                  "Вы близко к остановке $stationName",
                   textAlign: TextAlign.center,
                   style: TextStyle(fontSize: 35, color: Colors.white),
                 ),

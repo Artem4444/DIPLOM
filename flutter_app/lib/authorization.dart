@@ -28,6 +28,7 @@ class AuthorizationState extends State {
   double _greatingsOpacity = 0;
 
   void _getLocalData() async {
+     _setLoadingWidget();
     _loginUser = await AppRepository.getLocalUser();
     if (_loginUser == null) {
       _loginUser = new User("", "", "", "", "");
@@ -136,7 +137,6 @@ class AuthorizationState extends State {
   @override
   void initState() {
     NetworkManager.startListenConectionState(null);
-    _setLoadingWidget();
     _getLocalData();
   }
 
